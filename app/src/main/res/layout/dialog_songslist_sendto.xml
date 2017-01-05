@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    android:background="@drawable/dialog_bg">
+    <TextView
+        android:id="@+id/tv_songslist_sendto"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="14sp"
+        android:text="选择列表"
+        android:ellipsize="end"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_gray_divider"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp" >
+        <ListView
+            android:id="@+id/lv_songslist_sendto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+        </ListView >
+        <TextView
+            android:id="@+id/tv_songslist_null"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="还没有列表"
+            android:gravity="center"
+            android:visibility="gone"/>
+    </RelativeLayout >
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_gray_divider"/>
+    <Button
+        android:layout_gravity="right"
+        android:layout_margin="5dp"
+        android:id="@+id/btn_songslist_delete_cancle"
+        android:layout_width="40dp"
+        android:layout_height="25dp"
+        android:background="@drawable/btn_custom_selector"
+        android:text="取消"/>
+
+</LinearLayout >

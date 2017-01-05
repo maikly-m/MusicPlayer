@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/color_white"
+              android:baselineAligned="false"
+              android:orientation="vertical" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimary">
+        <ImageView
+            android:id="@+id/iv_phonemusic_back"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/back_64px"/>
+        <TextView
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="所有音乐"
+            android:textColor="@color/textColor_white"/>
+    </RelativeLayout >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white_">
+        <ImageView
+            android:id="@+id/iv_phonemusic_all"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/btn_check_off_holo_light"/>
+        <TextView
+            android:layout_centerInParent="true"
+            android:id="@+id/tv_phonemusic_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="已选择0首"/>
+        <Button
+            android:layout_alignParentRight="true"
+            android:id="@+id/btn_submit_phonemusic"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="15dp"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:background="@drawable/btn_custom_selector"
+            android:text="完成"/>
+    </RelativeLayout >
+    <ListView
+        android:id="@+id/lv_phonemusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+    </ListView >
+
+</LinearLayout >

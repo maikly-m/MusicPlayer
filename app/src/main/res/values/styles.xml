@@ -1,0 +1,84 @@
+<resources >
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar" >
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary" >@color/colorPrimary</item >
+        <item name="colorPrimaryDark" >@color/colorPrimaryDark</item >
+        <item name="colorAccent" >@color/colorAccent</item >
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style >
+    <style name="NoStatusBarTheme" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="Custom_ViewPageIndicator">
+        <item name="vpiTabPageIndicatorStyle">@style/Custom_TabPageIndicator</item>
+    </style>
+    <style name="Custom_ViewPageIndicator2">
+        <item name="vpiTabPageIndicatorStyle">@style/Custom_TabPageIndicator2</item>
+    </style>
+    <!--TabPageIndicator自定义属性-->
+    <style name="Custom_TabPageIndicator" parent="Widget.TabPageIndicator">
+        <!--<item name="android:gravity">center</item>-->
+        <item name="android:background">@drawable/tab_indicator</item>
+        <item name="android:paddingLeft">12dip</item>
+        <item name="android:paddingRight">12dip</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fadingEdge">horizontal</item>
+        <item name="android:fadingEdgeLength">10dp</item>
+        <item name="android:dividerPadding">10dp</item>
+    </style>
+    <style name="CustomTabPageIndicator.Text" parent="TextAppearance.TabPageIndicator">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@drawable/selector_tabtext</item>
+    </style>
+
+    <style name="Custom_TabPageIndicator2" parent="Widget.TabPageIndicator">
+        <!--<item name="android:gravity">center</item>-->
+        <item name="android:background">@drawable/tab_indicator</item>
+        <item name="android:paddingLeft">0dip</item>
+        <item name="android:paddingRight">0dip</item>
+        <item name="android:paddingTop">8dip</item>
+        <item name="android:paddingBottom">14dip</item>
+        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text2</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:fadingEdge">horizontal</item>
+        <item name="android:fadingEdgeLength">8dp</item>
+        <item name="android:dividerPadding">8dp</item>
+    </style>
+
+    <style name="CustomTabPageIndicator.Text2" parent="TextAppearance.TabPageIndicator">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@drawable/selector_tabtext</item>
+    </style>
+    <!--mainActivity弹出list的popupwindow动画-->
+    <style name="popupwindow_list">
+        <item name="android:windowEnterAnimation">@anim/popuwindow_slide_bottom_enter</item>
+        <item name="android:windowExitAnimation">@anim/popuwindow_slide_bottom_exit</item>
+    </style>
+    <!--自定义seekBar样式-->
+    <style name="Custom_SeekBar" parent="Base.Widget.AppCompat.SeekBar">
+        <item name="android:progressDrawable">@drawable/custom_progress_horizotal</item>
+        <item name="android:indeterminateDrawable">@drawable/custom_progress_horizotal</item>
+        <item name="android:minHeight">2dip</item>
+        <item name="android:maxHeight">2dip</item>
+        <item name="android:thumb">@drawable/custom_seek_thumb</item>
+        <item name="android:paddingLeft">5dip</item>
+        <item name="android:paddingRight">5dip</item>
+    </style>
+    <style name="Custom_SeekBar2" parent="Base.Widget.AppCompat.SeekBar">
+        <item name="android:progressDrawable">@drawable/custom_progress_horizotal</item>
+        <item name="android:indeterminateDrawable">@drawable/custom_progress_horizotal</item>
+        <item name="android:minHeight">2dip</item>
+        <item name="android:maxHeight">2dip</item>
+        <item name="android:thumb">@drawable/custom_seek_thumb2</item>
+        <item name="android:paddingLeft">7dip</item>
+        <item name="android:paddingRight">7dip</item>
+    </style>
+</resources >

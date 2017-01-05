@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+    <color name="colorPrimary" >#3F51B5</color >
+    <color name="colorPrimaryDark" >#303F9F</color >
+    <color name="colorAccent" >#FF4081</color >
+    <color name="white_" >#cccccc</color >
+    <color name="textColor_white" >#fff</color >
+    <color name="textColor_gray" >#999</color >
+    <color name="color_white" >#fff</color >
+    <color name="color_gray_divider" >#888</color >
+    <color name="color_musicbar" >#bbbbbb</color >
+    <color name="transparent" >@android:color/transparent</color >
+    <color name="btn_color_normal" >#ccc</color >
+    <color name="popupwindow_color_bg" >#ccc</color >
+    <color name="btn_color_pressed" >#999</color >
+    <color name="transparent_color_bg" >#aa999999</color >
+    <color name="custom_seek_thumb_color" >#ff0084ff</color>
+</resources >

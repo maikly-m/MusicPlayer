@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+
+        <style name="Custom_SeekBar" parent="Base.Widget.AppCompat.SeekBar" >
+                <item name="android:progressDrawable" >@drawable/custom_progress_horizotal</item >
+                <item name="android:indeterminateDrawable" >@drawable/custom_progress_horizotal
+                </item >
+                <item name="android:minHeight" >2dip</item >
+                <item name="android:maxHeight" >2dip</item >
+                <item name="android:thumb" >@drawable/custom_seek_thumb</item >
+                <item name="android:paddingLeft" >5dip</item >
+                <item name="android:paddingRight" >5dip</item >
+                <item name="android:paddingStart" >5dip</item >
+                <item name="android:paddingEnd" >5dip</item >
+        </style >
+
+        <style name="Custom_SeekBar2" parent="Base.Widget.AppCompat.SeekBar" >
+                <item name="android:progressDrawable" >@drawable/custom_progress_horizotal</item >
+                <item name="android:indeterminateDrawable" >@drawable/custom_progress_horizotal
+                </item >
+                <item name="android:minHeight" >2dip</item >
+                <item name="android:maxHeight" >2dip</item >
+                <item name="android:thumb" >@drawable/custom_seek_thumb2</item >
+                <item name="android:paddingLeft" >7dip</item >
+                <item name="android:paddingRight" >7dip</item >
+                <item name="android:paddingStart" >7dip</item >
+                <item name="android:paddingEnd" >7dip</item >
+
+        </style >
+</resources >
