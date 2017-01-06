@@ -3,6 +3,7 @@ package com.example.mrh.musicplayer.activity;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -33,6 +34,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.mrh.musicplayer.ActivityManager;
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.adapter.PopListAdapter;
 import com.example.mrh.musicplayer.activity.adapter.PresetReverbAdapter;
@@ -170,14 +172,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     protected void onCreate (@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        initService();
         mSlidingMenu = new SlidingMenu(this);
         setContentView(mSlidingMenu);
         initMainView();
         initMenuView();
         mSlidingMenu.addView(mMenuView);
         mSlidingMenu.addView(mMainView);
-        mSlidingMenu.setBackgroundResource(R.drawable.bg);
+        mSlidingMenu.setBackground(Utils.optimizeDrawble(MainActivity.this,
+                R.drawable.mainactivity_bg));
+        initService();
     }
 
     private void initData () {
@@ -359,26 +362,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         mOa.setDuration(10000);
 
         //进度条监听
-        mSbMusicProcess.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged (SeekBar seekBar, int progress, boolean fromUser) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch (SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch (SeekBar seekBar) {
-                if (mPlayer.mIsExist){
-                    //拖动进度条
-                    int i = seekBar.getProgress() * mPlayer.duration / 100;
-                    mPlayer.mMediaPlayer.seekTo(i);
-                }
-            }
-        });
+        mSbMusicProcess.setOnSeekBarChangeListener(this);
     }
 
     /**
@@ -815,7 +799,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
             break;
         case R.id.iv_main_music:
-
+            if (mPlayer.mIsExist){
+                startActivity(new Intent(MainActivity.this, PlayActivity.class));
+                overridePendingTransition(R.anim.activity_slide_left_enter,
+                        R.anim.activity_slide_left_exit);
+            }
             break;
         case R.id.iv_music_go:
             if (mPlayer.mIsExist){
@@ -901,6 +889,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             va2.start();
             break;
         case R.id.btn_exit:
+            List<Activity> activityList = ActivityManager.getActivityManager().getActivityList();
+            for (Activity activity : activityList){
+                if (!activity.getComponentName().getPackageName().equals(this.getPackageName())){
+                    activity.finish();
+                }
+            }
             Intent intent = new Intent(MainActivity.this, PlaySevice.class);
             intent.setAction("com.example.mrh.musicplayer.service.PlaySevice");
             stopService(intent);
@@ -927,10 +921,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             initData();
         }
         if (flag.equals(Constant.UPDATE)){
-            mTvMusicName.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
-                    .mPosition).getTITLE());
-            mTvMusicArtist.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
-                    .mPosition).getARTIST());
+            mTvMusicName.setText(mPlayer.mMusicSongsname);
+            mTvMusicArtist.setText(mPlayer.mMusicArtistname);
             if (ProgressThread.flag){
                 mIvMusicGo.setBackgroundResource(R.drawable.pause_64px_normal);
             } else{
@@ -964,8 +956,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
         if (flag.equals(Constant.UPDATE_PREGRESS)){
-            mTvMusicName.setText(mPlayer.mMusicSongsname);
-            mTvMusicArtist.setText(mPlayer.mMusicArtistname);
             mSbMusicProcess.setProgress(mPlayer.mMediaPlayer.getCurrentPosition() * 100 /
                     mPlayer.duration);
             mTvMusicProcess.setText(Utils.formatTime(mPlayer.mMediaPlayer.getCurrentPosition
@@ -1042,7 +1032,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onStopTrackingTouch (SeekBar seekBar) {
-
+        if (seekBar.getId() == R.id.sb_music_process && mPlayer.mIsExist){
+            //拖动进度条
+            int i = seekBar.getProgress() * mPlayer.duration / 100;
+            mPlayer.mMediaPlayer.seekTo(i);
+        }
     }
 
     @Override
