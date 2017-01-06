@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.example.mrh.musicplayer.R;
-import com.example.mrh.musicplayer.activity.MainActivity;
+import com.example.mrh.musicplayer.activity.BaseActivity;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public class BaseFragment extends Fragment {
     private static final String TAG = "BaseFragment";
     public Context context;
-    public MainActivity mActivity;
+    public BaseActivity mActivity;
     public FragmentManager fm;
     public FragmentManager cfm;
     public String fragmentName;
@@ -42,7 +42,7 @@ public class BaseFragment extends Fragment {
     @Override
     public void onCreate (@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity = (MainActivity) context;
+        mActivity = (BaseActivity) context;
         fm = mActivity.getSupportFragmentManager();
         cfm = getChildFragmentManager();
     }

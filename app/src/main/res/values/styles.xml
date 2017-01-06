@@ -57,6 +57,7 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@drawable/selector_tabtext</item>
     </style>
+
     <!--mainActivity弹出list的popupwindow动画-->
     <style name="popupwindow_list">
         <item name="android:windowEnterAnimation">@anim/popuwindow_slide_bottom_enter</item>
@@ -80,5 +81,14 @@
         <item name="android:thumb">@drawable/custom_seek_thumb2</item>
         <item name="android:paddingLeft">7dip</item>
         <item name="android:paddingRight">7dip</item>
+    </style>
+    <style name="Custom_SeekBar3" parent="Base.Widget.AppCompat.SeekBar">
+        <item name="android:progressDrawable">@drawable/custom_progress_horizotal</item>
+        <item name="android:indeterminateDrawable">@drawable/custom_progress_horizotal</item>
+        <item name="android:minHeight">3dip</item>
+        <item name="android:maxHeight">3dip</item>
+        <item name="android:thumb">@drawable/custom_seek_thumb3</item>
+        <item name="android:paddingLeft">8dip</item>
+        <item name="android:paddingRight">8dip</item>
     </style>
 </resources >

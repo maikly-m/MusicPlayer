@@ -7,7 +7,7 @@ package com.example.mrh.musicplayer.constant;
 public class Constant {
     public static final String SYSTEM_MUSIC_LIST_NAME = "musicPlayer";
     public static final String CUSTOM_LIST = "list_custom";
-
+    //mainActivty
     public static final String OK_DATA = "ok_data"; //初始化加载数据完毕
     public static final String OK_INITSERVICE = "ok_initservice"; //初始化服务
     public static final String UPDATE = "update"; //更新数据变化
@@ -19,6 +19,9 @@ public class Constant {
     public static final String UPDATE_PREGRESS = "update_pregress"; //更新进度
     public static final String UPDATE_PREGRESS_ROTATE = "update_pregress_rotate"; //转动
     public static final String UPDATE_PLAY_RESET = "update_play_reset"; //清空播放
+    //playActivity
+    public static final String PLAYACTIVITY_INITSERVICE =
+            "playactivity_initservice";//playactivityl连接上服务
 
     public static final String PLAYMODEL_ORDER = "顺序播放";
     public static final String PLAYMODEL_RANDOM = "随机播放";

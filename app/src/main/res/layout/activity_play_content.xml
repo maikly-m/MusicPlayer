@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/ll_playcontent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+        <LinearLayout
+            android:id="@+id/ll_playcontent_back"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/back_64px"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="返回"
+                android:textSize="16sp"
+                android:textColor="@drawable/textcolor_white2gray"/>
+        </LinearLayout >
+
+        <TextView
+            android:gravity="bottom"
+            android:id="@+id/tv_playcontent_title"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="歌曲"
+            android:textSize="16sp"
+            android:textColor="@color/textColor_white"/>
+        <TextView
+            android:layout_below="@id/tv_playcontent_title"
+            android:id="@+id/tv_playcontent_artist"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="歌手"
+            android:textSize="12sp"
+            android:textColor="@color/textColor_white"/>
+    </RelativeLayout >
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_playcontent"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" >
+
+    </android.support.v4.view.ViewPager >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="25dp" >
+        <com.viewpagerindicator.CirclePageIndicator
+            android:layout_centerInParent="true"
+            android:id="@+id/indicator_palycontent"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            app:radius="4dp"
+            app:fillColor="@color/color_white"
+            app:centered="true"/>
+    </RelativeLayout >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="90dp" >
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="25dp" >
+            <TextView
+                android:id="@+id/tv_playcontent_process_duration"
+                android:gravity="center"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_width="50dp"
+                android:layout_height="25dp"
+                android:text="00:00"
+                android:textColor="@color/color_white"
+                android:textSize="12sp"/>
+            <SeekBar
+                android:layout_gravity="center"
+                android:id="@+id/sb_playcontent_process"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="0"
+                style="@style/Custom_SeekBar3"
+                />
+            <TextView
+                android:id="@+id/tv_playcontent_process_during"
+                android:gravity="center"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_width="50dp"
+                android:layout_height="25dp"
+                android:text="00:00"
+                android:textColor="@color/color_white"
+                android:textSize="12sp"/>
+        </LinearLayout >
+        <RelativeLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="75dp" >
+            <ImageView
+                android:id="@+id/iv_playcontent_play"
+                android:layout_centerInParent="true"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:background="@drawable/btn_play_176px"
+                />
+            <ImageView
+                android:layout_toRightOf="@+id/iv_playcontent_play"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/iv_playcontent_next"
+                android:layout_centerVertical="true"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/btn_next_96px"/>
+            <ImageView
+                android:layout_toLeftOf="@+id/iv_playcontent_play"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:id="@+id/iv_playcontent_pre"
+                android:layout_centerVertical="true"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/btn_pre_96px"/>
+            <ImageView
+                android:id="@+id/iv_playcontent_playmodel"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/order_64px"/>
+            <ImageView
+                android:layout_alignParentRight="true"
+                android:id="@+id/iv_playcontent_list"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/poplist_64px"/>
+        </RelativeLayout >
+    </RelativeLayout >
+
+</LinearLayout >

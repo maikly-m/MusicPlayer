@@ -29,6 +29,16 @@ public class ActivityManager {
             mActivities.add(activity);
         }
     }
+
+    /**
+     * 移除activity, activityd的ondestroy()调用
+     * @param activity
+     */
+    public void deleteActivity(Activity activity){
+        if (activity != null && mActivities.contains(activity)){
+            mActivities.remove(activity);
+        }
+    }
     //移除并关闭activity
     public void removeActivity(Activity activity){
         if (activity != null && mActivities.contains(activity)){

@@ -9,6 +9,7 @@
     <color name="color_white" >#fff</color >
     <color name="color_gray_divider" >#888</color >
     <color name="color_musicbar" >#bbbbbb</color >
+    <color name="playActivity_color_bg" >#ff23a9df</color >
     <color name="transparent" >@android:color/transparent</color >
     <color name="btn_color_normal" >#ccc</color >
     <color name="popupwindow_color_bg" >#ccc</color >

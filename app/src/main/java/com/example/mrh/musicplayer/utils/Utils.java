@@ -5,7 +5,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.provider.MediaStore;
+import android.support.annotation.DrawableRes;
 
 import com.example.mrh.musicplayer.MyApplication;
 import com.example.mrh.musicplayer.constant.Constant;
@@ -407,5 +412,62 @@ public class Utils {
             return file.delete();
         }
         return false;
+    }
+
+    /**
+     *  优化图片，图片格式jpg,以便减少内存
+     * @param context
+     * @param resid
+     * @return
+     */
+    public static Drawable optimizeDrawble(Context context, @DrawableRes int resid){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        BitmapFactory.decodeResource(context.getResources(), resid, options);
+        int originalWidth = options.outWidth;
+        int originalHeight = options.outHeight;
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+        bitmapOptions.inSampleSize = 1;
+        bitmapOptions.inScaled = true;
+        bitmapOptions.inTargetDensity = 1;
+        bitmapOptions.inDensity = 1;
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resid, bitmapOptions);
+        Bitmap bmp = Bitmap.createBitmap(bitmap, 0, 0, originalWidth, originalHeight);
+        return new BitmapDrawable(context.getResources(), bmp);
+    }
+
+    /**
+     *  比例缩放图片
+     * @param x
+     * @param y
+     * @param context
+     * @param resid
+     * @return
+     */
+    public static Drawable scaleDrawble(int x, int y, Context context, @DrawableRes int resid){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        BitmapFactory.decodeResource(context.getResources(), resid, options);
+        int originalWidth = options.outWidth;
+        int originalHeight = options.outHeight;
+        if ((originalWidth == -1) || (originalHeight == -1))
+            return null;
+        int be = 1;//be=1表示不缩放
+        if (originalWidth > originalHeight && originalWidth > x) {
+            be = originalWidth / x;
+        } else if (originalWidth < originalHeight && originalHeight > y) {
+            be = originalHeight / y;
+        }
+        if (be <= 0)
+            be = 1;
+        //比例压缩
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inSampleSize = be;//设置缩放比例
+        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resid, bitmapOptions);
+        return new BitmapDrawable(context.getResources(), bitmap);
     }
 }

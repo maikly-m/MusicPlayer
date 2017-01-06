@@ -66,7 +66,7 @@ public class PlaySevice extends Service{
     public String mMusicListname;
     private String mMusicListfragment;
     public boolean mMusicPlaycondition;
-    public String mMusicPlaymodel;
+    public String mMusicPlaymodel = Constant.PLAYMODEL_ORDER;
     public int mMusicPlaytime;
     public String mMusicSongsname;
     public String mMusicArtistname;
@@ -289,7 +289,7 @@ public class PlaySevice extends Service{
         mPlayHandler.sendMessage(message);
         switch (mMediaPlayer.getPlayList().getPlayModel()){
         case Constant.PLAYMODEL_ORDER:
-            if (mPosition < mList.size()-1){
+            if (mPosition >= 0 && mPosition < mList.size()-1){
                 setSongPath(++mPosition);
                 MusicInfo musicInfo = mList.get(mPosition);
                 mMusicSongsname = musicInfo.getTITLE();
@@ -307,7 +307,7 @@ public class PlaySevice extends Service{
             mPosition = p;
             break;
         case Constant.PLAYMODEL_CYCLE:
-            if (mPosition < mList.size()-1){
+            if (mPosition >= 0 && mPosition < mList.size()-1){
                 setSongPath(++mPosition);
             }else {
                 mPosition = 0;
@@ -321,7 +321,46 @@ public class PlaySevice extends Service{
         }
     }
 
-
+    /**
+     * 播放上一首
+     */
+    public void preMusic () {
+        Message message = Message.obtain();
+        message.what = MyMediaPlayer.RESET;
+        mPlayHandler.sendMessage(message);
+        switch (mMediaPlayer.getPlayList().getPlayModel()){
+        case Constant.PLAYMODEL_ORDER:
+            if (mPosition >= 0 && mPosition < mList.size()-1){
+                setSongPath(--mPosition);
+                MusicInfo musicInfo = mList.get(mPosition);
+                mMusicSongsname = musicInfo.getTITLE();
+                mMusicArtistname = musicInfo.getARTIST();
+                duration = Integer.valueOf(musicInfo.getDURATION());
+            }
+            break;
+        case Constant.PLAYMODEL_RANDOM:
+            int p = (int) (Math.random() * (mList.size()-1) + 0.5f);
+            setSongPath(p);
+            MusicInfo musicInfo = mList.get(p);
+            mMusicSongsname = musicInfo.getTITLE();
+            mMusicArtistname = musicInfo.getARTIST();
+            duration = Integer.valueOf(musicInfo.getDURATION());
+            mPosition = p;
+            break;
+        case Constant.PLAYMODEL_CYCLE:
+            if (mPosition >= 0 && mPosition < mList.size()-1){
+                setSongPath(--mPosition);
+            }else {
+                mPosition = 0;
+                setSongPath(mPosition);
+            }
+            MusicInfo m = mList.get(mPosition);
+            mMusicSongsname = m.getTITLE();
+            mMusicArtistname = m.getARTIST();
+            duration = Integer.valueOf(m.getDURATION());
+            break;
+        }
+    }
     //从sp中获取数据
     public void getSpData () {
         //取出播放状态

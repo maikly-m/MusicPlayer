@@ -114,6 +114,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     private int mScreenY; //屏幕绝对高度
     private boolean isStartAnimation = false;
     private int mContainer_height;
+    private MainActivity activity;
 
     /**
      * 调用newInstance方法来创建fragment，不要调用此方法
@@ -147,6 +148,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         setFragmentName(getArguments().getString("name"));
+        this.activity = (MainActivity) mActivity;
     }
 
     @Override
@@ -158,7 +160,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     private void initView () {
         //back键处理fragment返回
         if (fm.findFragmentByTag("MusicListFragment") != null){
-            mActivity.setOnFragmentBack(new BaseActivity.FragmentBack() {
+            activity.setOnFragmentBack(new BaseActivity.FragmentBack() {
                 @Override
                 public boolean execute (KeyEvent event) {
                     showAndRemoveFragment("MusicListFragment", fragmentName);
@@ -166,7 +168,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                 }
             }, fragmentName);
         } else if (fm.findFragmentByTag("AllMusicFragment") != null){
-            mActivity.setOnFragmentBack(new BaseActivity.FragmentBack() {
+            activity.setOnFragmentBack(new BaseActivity.FragmentBack() {
                 @Override
                 public boolean execute (KeyEvent event) {
                     showAndRemoveFragment("AllMusicFragment", fragmentName);
@@ -661,7 +663,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void initData () {
-        player = mActivity.mPlayer;
+        player = activity.mPlayer;
 
         if (player.mMusicPlaymodel != null){
             switch (player.mMusicPlaymodel){
@@ -683,32 +685,32 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
             mTvSongslistPlaymodel.setText(Constant.PLAYMODEL_ORDER);
         }
 
-        mActivity.customMusicListName = fragmentName;
+        activity.customMusicListName = fragmentName;
         if (fragmentName.contains(Constant.MUSIC_LIST_ALLSONGS_)){
             this.fragmentPrefix = Constant.MUSIC_LIST_ALLSONGS_;
             this.mLlSongslist.setVisibility(View.GONE);
-            list = mActivity.songs_all.get(fragmentName);
+            list = activity.songs_all.get(fragmentName);
         } else if (fragmentName.contains(Constant.MUSIC_LIST_CUSTOM_)){
             this.fragmentPrefix = Constant.MUSIC_LIST_CUSTOM_;
-            list = mActivity.songs_custom.get(fragmentName);
+            list = activity.songs_custom.get(fragmentName);
             String substring = fragmentName.substring(Constant.MUSIC_LIST_CUSTOM_.length());
             mTvSongslistFragmentname.setText(substring);
         } else if (fragmentName.contains(Constant.MUSIC_LIST_ARTIST_)){
             this.fragmentPrefix = Constant.MUSIC_LIST_ARTIST_;
             this.mIvSongslistAdd.setVisibility(View.INVISIBLE);
-            list = mActivity.songs_artist.get(fragmentName);
+            list = activity.songs_artist.get(fragmentName);
             String substring = fragmentName.substring(Constant.MUSIC_LIST_ARTIST_.length());
             mTvSongslistFragmentname.setText(substring);
         } else if (fragmentName.contains(Constant.MUSIC_LIST_ALBUM_)){
             this.fragmentPrefix = Constant.MUSIC_LIST_ALBUM_;
             this.mIvSongslistAdd.setVisibility(View.INVISIBLE);
-            list = mActivity.songs_album.get(fragmentName);
+            list = activity.songs_album.get(fragmentName);
             String substring = fragmentName.substring(Constant.MUSIC_LIST_ALBUM_.length());
             mTvSongslistFragmentname.setText(substring);
         } else if (fragmentName.contains(Constant.MUSIC_LIST_DATA_)){
             this.fragmentPrefix = Constant.MUSIC_LIST_DATA_;
             this.mIvSongslistAdd.setVisibility(View.INVISIBLE);
-            list = mActivity.songs_data.get(fragmentName);
+            list = activity.songs_data.get(fragmentName);
             String substring = fragmentName.substring(Constant.MUSIC_LIST_DATA_.length());
             mTvSongslistFragmentname.setText(substring);
         }
@@ -963,7 +965,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     @Subscribe(threadMode = ThreadMode.MAIN)       //主线程标识
     public void onEventMainThread (String flag) {
         if (flag.equals(Constant.UPDATE_FRAGMENT_MODEL)){
-            switch (mActivity.mPlayer.mMediaPlayer.getPlayList().getPlayModel()){
+            switch (activity.mPlayer.mMediaPlayer.getPlayList().getPlayModel()){
             case Constant.PLAYMODEL_ORDER:
                 mIvSongslistPlaymodel.setBackgroundResource(R
                         .drawable.order_64px);

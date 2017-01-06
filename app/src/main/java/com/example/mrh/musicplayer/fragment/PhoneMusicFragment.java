@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.BaseActivity;
+import com.example.mrh.musicplayer.activity.MainActivity;
 import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.fragment.adapter.PhoneMusicAdapter;
 import com.example.mrh.musicplayer.fragment.viewHolder.PhoneMusicViewHolder;
@@ -46,6 +47,7 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
     private int count = 0; //用于判断是否点击了全选
     private TextView mTvPhonemusicSelect;
     private int num = 0;
+    private MainActivity activity;
 
     public PhoneMusicFragment () {
         super();
@@ -64,8 +66,14 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
 
     }
 
+    @Override
+    public void onCreate (@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.activity = (MainActivity) mActivity;
+    }
+
     private void initData () {
-        list = mActivity.mAllSongs;
+        list = activity.mAllSongs;
         mAdapter = new PhoneMusicAdapter(context, list);
         mLvPhonemusic.setAdapter(mAdapter);
         mConditionMap = mAdapter.conditionMap;
@@ -93,7 +101,7 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
         });
 
         //back键处理fragment返回
-        mActivity.setOnFragmentBack(new BaseActivity.FragmentBack() {
+        activity.setOnFragmentBack(new BaseActivity.FragmentBack() {
             @Override
             public boolean execute (KeyEvent event) {
                 showAndRemoveFragment("MusicListFragment", fragmentName);
@@ -166,7 +174,7 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
             return;
         }
         //判断原先是否有歌曲
-        ArrayList<MusicInfo> musicInfos = mActivity.songs_custom.get(mActivity.customMusicListName);
+        ArrayList<MusicInfo> musicInfos = activity.songs_custom.get(activity.customMusicListName);
         ArrayList<MusicInfo> mm = new ArrayList<>();
         for (int i = 0; i < l.size(); i++){
             mm.add(l.get(i));
@@ -181,7 +189,7 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
             }
         }
         musicInfos.addAll(mm);
-        mActivity.songs_custom.put(mActivity.customMusicListName, musicInfos);
+        activity.songs_custom.put(activity.customMusicListName, musicInfos);
 
         MusicListFragment fragment = (MusicListFragment) fm.findFragmentByTag("MusicListFragment");
         fragment.mAdapter.notifyDataSetChanged();
@@ -203,10 +211,10 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
             cv.put("LYRIC", m.getLYRIC());
             lcv.add(cv);
         }
-        Utils.setMusicInfo(context, mActivity.customMusicListName, lcv);
+        Utils.setMusicInfo(context, activity.customMusicListName, lcv);
 
         addAndRemoveFragment(R.id.fl_main, SongsListFragment.newInstance
-                (mActivity.customMusicListName), mActivity.customMusicListName,
+                (activity.customMusicListName), activity.customMusicListName,
                 "PhoneMusicFragment");
     }
 }

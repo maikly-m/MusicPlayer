@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.BaseActivity;
+import com.example.mrh.musicplayer.activity.MainActivity;
 import com.example.mrh.musicplayer.constant.Constant;
 import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.domain.MusicList;
@@ -52,7 +53,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     public MusicListAdapter mAdapter;
     public TextView mTvListNum;
     public HashMap<String, ArrayList<MusicInfo>> songs;
-
+    private MainActivity activity;
 
     public MusicListFragment () {
         super();
@@ -65,7 +66,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         if (mRootView == null){
             mRootView = inflater.inflate(R.layout.fragment_musiclist, null);
             initView();
-            if (mActivity.list_custom != null){
+            if (activity.list_custom != null){
                 initData();
             }
         }
@@ -75,6 +76,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onCreate (@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.activity = (MainActivity)mActivity;
         EventBus.getDefault().register(this);
     }
 
@@ -85,8 +87,8 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void initData () {
-        list = mActivity.list_custom;
-        songs = mActivity.songs_custom;
+        list = activity.list_custom;
+        songs = activity.songs_custom;
         mTvListNum.setText("歌单("+list.size()+")");
         mAdapter = new MusicListAdapter(context, this, list);
         mLvMusiclist.setAdapter(mAdapter);
@@ -103,10 +105,10 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
      * 判断列表是否空，然后跳转
      */
     private void selectFragment (String name) {
-        ArrayList<MusicInfo> list = mActivity.songs_custom.get(name);
+        ArrayList<MusicInfo> list = activity.songs_custom.get(name);
         if (list == null || list.size() == 0){
             //转到添加歌曲界面
-            mActivity.customMusicListName = name;
+            activity.customMusicListName = name;
             addFragment(R.id.fl_main, new MusicNullFragment(), name);
         } else{
             //转到已有的歌曲界面
@@ -125,7 +127,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         mTvListNum.setOnClickListener(this);
 
         //back键处理fragment返回
-        mActivity.setOnFragmentBack(new BaseActivity.FragmentBack() {
+        activity.setOnFragmentBack(new BaseActivity.FragmentBack() {
             @Override
             public boolean execute (KeyEvent event) {
                 showAndRemoveFragment("ContentFragment", fragmentName);
@@ -173,7 +175,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         musicList.setListName(name);
         openDataBase(name);
         list.add(musicList);
-        mActivity.songs_custom.put(name, new ArrayList<MusicInfo>());
+        activity.songs_custom.put(name, new ArrayList<MusicInfo>());
         mAdapter.notifyDataSetChanged();
         mTvListNum.setText("歌单("+list.size()+")");
     }

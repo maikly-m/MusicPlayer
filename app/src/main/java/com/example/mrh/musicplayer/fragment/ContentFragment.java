@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.mrh.musicplayer.R;
+import com.example.mrh.musicplayer.activity.MainActivity;
 import com.example.mrh.musicplayer.fragment.adapter.MainAdapter;
 import com.viewpagerindicator.TabPageIndicator;
 
@@ -62,7 +63,7 @@ public class ContentFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void initFragment () {
-        this.mList = mActivity.mList;
+        this.mList = ((MainActivity)mActivity).mList;
         mList.add(new MusicFragment());
         mList.add(new CommunityFragment());
         mList.add(new MineFragment());
