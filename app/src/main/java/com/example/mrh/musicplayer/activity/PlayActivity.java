@@ -54,7 +54,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     private ImageView mIvPlaycontentPre;
     private ImageView mIvPlaycontentPlaymodel;
     private ImageView mIvPlaycontentList;
-    private PlaySevice mPlayer;
+    public PlaySevice mPlayer;
     private ArrayList<MusicInfo> mAllSongs;
     private ArrayList<MusicList> list_custom;
     private ArrayList<MusicList> list_allsongs;
@@ -97,14 +97,6 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
-    @Override
-    protected void onDestroy () {
-        super.onDestroy();
-        DebugUtils.log_d(TAG, "sss++play++");
-        EventBus.getDefault().unregister(this);
-        unbindService(mServiceConnection);
-    }
-
     private void initView () {
         mLlPlaycontent = (LinearLayout) findViewById(R.id.ll_playcontent);
         mLlPlaycontentBack = (LinearLayout) findViewById(R.id.ll_playcontent_back);
@@ -132,12 +124,6 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         mIvPlaycontentList.setOnClickListener(this);
         mSbPlaycontentProcess.setOnSeekBarChangeListener(this);
 
-        mList.add(LyrcisFragment.newInstance("lyrcis"));
-        mList.add(VisualizerFragment.newInstance("visualizer"));
-        mAdapter = new PlayActivityAdapter(getSupportFragmentManager(), mList);
-        mVpPlaycontent.setAdapter(mAdapter);
-        mIndicatorPalycontent.setViewPager(mVpPlaycontent);
-
     }
 
     @Override
@@ -153,9 +139,11 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
             if (mPlayer.mMediaPlayer.isPlaying()){
                 mPlayer.pauseMusic();
                 mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_play_176px);
+
             }else {
                 mPlayer.playMusic();
                 mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_pause_176px);
+
             }
             break;
         case R.id.iv_playcontent_next:
@@ -203,8 +191,13 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
 
         setView();
     }
-
     private void setView () {
+        mList.add(LyrcisFragment.newInstance("lyrcis"));
+        mList.add(VisualizerFragment.newInstance("visualizer"));
+        mAdapter = new PlayActivityAdapter(getSupportFragmentManager(), mList);
+        mVpPlaycontent.setAdapter(mAdapter);
+        mIndicatorPalycontent.setViewPager(mVpPlaycontent);
+
         mTvPlaycontentTitle.setText(mPlayer.mMusicSongsname);
         mTvPlaycontentArtist.setText(mPlayer.mMusicArtistname);
         mTvPlaycontentProcessDuration.setText(Utils.formatTime(mPlayer.duration));
@@ -242,6 +235,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
             initData();
         }
         if (flag.equals(Constant.UPDATE)){
+            DebugUtils.log_d(TAG, "ssddwww++update+++++");
             mTvPlaycontentTitle.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
                     .mPosition).getTITLE());
             mTvPlaycontentArtist.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
@@ -272,5 +266,12 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
             int i = seekBar.getProgress() * mPlayer.duration / 100;
             mPlayer.mMediaPlayer.seekTo(i);
         }
+    }
+
+    @Override
+    protected void onDestroy () {
+        super.onDestroy();
+        unbindService(mServiceConnection);
+        EventBus.getDefault().unregister(this);
     }
 }

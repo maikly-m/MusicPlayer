@@ -22,6 +22,8 @@ public class Constant {
     //playActivity
     public static final String PLAYACTIVITY_INITSERVICE =
             "playactivity_initservice";//playactivityl连接上服务
+    public static final String PLAYACTIVITY_PAUSE = "playactivity_pause";
+    public static final String PLAYACTIVITY_PLAY = "playactivity_play";
 
     public static final String PLAYMODEL_ORDER = "顺序播放";
     public static final String PLAYMODEL_RANDOM = "随机播放";

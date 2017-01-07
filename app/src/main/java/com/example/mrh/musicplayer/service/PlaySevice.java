@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
+import android.media.audiofx.Visualizer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -64,7 +65,6 @@ public class PlaySevice extends Service{
     public HashMap<String, ArrayList<MusicInfo>> songs_data;
     private boolean dataReady = false;
     public String mMusicListname;
-    private String mMusicListfragment;
     public boolean mMusicPlaycondition;
     public String mMusicPlaymodel = Constant.PLAYMODEL_ORDER;
     public int mMusicPlaytime;
@@ -78,6 +78,7 @@ public class PlaySevice extends Service{
     private BroadcastReceiver mReceiver;
     public Equalizer mEqualizer;
     public BassBoost mBassBoost;
+    public Visualizer mVisualizer;
     /**
      * 手动改变了均衡器
      */
@@ -192,6 +193,7 @@ public class PlaySevice extends Service{
         //设置均衡器
         setEqualizer();
         setBassBoost();
+        setVisualizer();
         mPlayHandler = new Handler(mPlayThread.getLooper(), new Handler.Callback() {
             @Override
             public boolean handleMessage (Message msg) {
@@ -207,6 +209,7 @@ public class PlaySevice extends Service{
                     EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
                     EventBus.getDefault().post(Constant.UPDATE_POPUPWINDOW_LOCATION);
+                    EventBus.getDefault().post(Constant.PLAYACTIVITY_PLAY);
                     break;
                 case MyMediaPlayer.STOP:
                     //发出暂停更新进度消息
@@ -220,12 +223,14 @@ public class PlaySevice extends Service{
                     ProgressThread.flag = false;
                     EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
+                    EventBus.getDefault().post(Constant.PLAYACTIVITY_PAUSE);
                     break;
                 case MyMediaPlayer.QUIT:
                     //结束进程
                     ProgressThread.flag = false;
                     mEqualizer.release();
                     mBassBoost.release();
+                    mVisualizer.release();
                     mMediaPlayer.release();
                     mPlayThread.quit();
                     mProgressThread.quit();
@@ -238,6 +243,7 @@ public class PlaySevice extends Service{
                     mMediaPlayer.isStart = false;
                     EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
+                    EventBus.getDefault().post(Constant.PLAYACTIVITY_PAUSE);
                     break;
                 case MyMediaPlayer.PLAY_RESET:
                     ProgressThread.flag = false;
@@ -610,6 +616,15 @@ public class PlaySevice extends Service{
     public void setActivity (Activity activity) {
         mActivity = new SoftReference<>(activity);
     }
+
+    /**
+     * 设置示波器
+     */
+    private void setVisualizer () {
+        mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+    }
+
     /**
      * 设置均衡器
      */
