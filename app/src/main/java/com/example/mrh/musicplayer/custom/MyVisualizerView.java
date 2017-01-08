@@ -2,11 +2,12 @@ package com.example.mrh.musicplayer.custom;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.example.mrh.musicplayer.R;
 
 /**
  * Created by MR.H on 2017/1/7 0007.
@@ -14,8 +15,8 @@ import android.view.View;
 
 public class MyVisualizerView extends View {
     private static final String TAG = "MyVisualizerView";
-
     private Paint mPaint;
+    private Paint mPaint_mirror;
     private byte[] waveform;
     private Rect mRect;
     private int mMeasuredWidth;
@@ -24,7 +25,12 @@ public class MyVisualizerView extends View {
     private int speed = 0;
     private int mLeft;
     private int mRight;
-    private int mBottom;
+    private int mHeight;
+    private Rect mRect_mirror;
+    private int mBottom_mirror;
+    private int mHeight_mirror;
+    private double mRect_top;
+    private double mRect_mirror_top;
 
     public MyVisualizerView (Context context) {
         this(context, null);
@@ -38,9 +44,16 @@ public class MyVisualizerView extends View {
         super(context, attrs, defStyleAttr);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.BLUE);
+        mPaint.setColor(context.getResources().getColor(R.color.playActivity_color_bg));
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setStrokeWidth(1);
+
+        mPaint_mirror = new Paint();
+        mPaint_mirror.setAntiAlias(true);
+        mPaint_mirror.setColor(context.getResources().getColor(R.color.playActivity_color_bg));
+        mPaint_mirror.setStyle(Paint.Style.FILL);
+        mPaint_mirror.setStrokeWidth(1);
+        mPaint_mirror.setAlpha(60);
     }
 
     public void updateVisualizer(byte[] waveform){
@@ -75,8 +88,15 @@ public class MyVisualizerView extends View {
         if (mMeasuredWidth <= 0){
             mMeasuredWidth = getMeasuredWidth();
             mMeasuredHeight = getMeasuredHeight();
-            mRect = new Rect(0, 0, mMeasuredWidth, mMeasuredHeight);
-            mBottom = mRect.height();
+            mRect = new Rect(0, (int) (0.3 * mMeasuredHeight), mMeasuredWidth,
+                    (int) (0.8 * mMeasuredHeight));
+            mHeight = mRect.height();
+            mRect_top = 0.3 * mMeasuredHeight;
+
+            mRect_mirror = new Rect(0, (int) (0.8 * mMeasuredHeight), mMeasuredWidth,
+                    mMeasuredHeight);
+            mHeight_mirror = mRect_mirror.height();
+            mRect_mirror_top = 0.8 * mMeasuredHeight;
         }
     }
 
@@ -88,9 +108,16 @@ public class MyVisualizerView extends View {
         }
         for (int i = 0; i < 1000; i+=25){
             mLeft = mRect.width() * i / 1000;
-            mTop = mBottom - (mBottom * (128 + waveform[i])) / 255;
+            mTop = mHeight - (mHeight * (128 + waveform[i])) / 255;
             mRight = mLeft + 12;
-            canvas.drawRect(mLeft, mTop, mRight, mBottom, mPaint);
+
+            mBottom_mirror = (mHeight_mirror * (128 + waveform[i])) / 255; //倒影的高度
+
+            canvas.drawRect(mLeft, (float) (mRect_top + mTop),
+                    mRight, (float) (mRect_top + mHeight), mPaint);
+            canvas.drawRect(mLeft, (float) mRect_mirror_top, mRight,
+                    (float) (mRect_mirror_top + mBottom_mirror), mPaint_mirror); //绘制倒影
+
         }
     }
 }

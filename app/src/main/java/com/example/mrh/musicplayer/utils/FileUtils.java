@@ -18,7 +18,6 @@ public class FileUtils {
 
     public FileUtils () {
         this.MNT_SDCARD_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath();
-        DebugUtils.log_d(TAG, MNT_SDCARD_ROOT);
         mList = new ArrayList<>();
     }
 
@@ -28,9 +27,6 @@ public class FileUtils {
      */
     public List<String> getFile(){
         scanFile(MNT_SDCARD_ROOT);
-        for (int j = 0; j < mList.size(); j++){
-            DebugUtils.log_d(TAG, mList.get(j));
-        }
         return mList;
     }
 

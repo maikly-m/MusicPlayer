@@ -12,15 +12,15 @@ import com.example.mrh.musicplayer.R;
  * Created by MR.H on 2017/1/6 0006.
  */
 
-public class LyrcisFragment extends BaseFragment {
+public class playFragment extends BaseFragment {
 
     private View mRootView;
 
-    public LyrcisFragment () {
+    public playFragment () {
         super();
     }
-    public static LyrcisFragment newInstance (String name) {
-        LyrcisFragment fragment = new LyrcisFragment();
+    public static playFragment newInstance (String name) {
+        playFragment fragment = new playFragment();
         Bundle bundle = new Bundle();
         bundle.putString("name", name);
         fragment.setArguments(bundle);
@@ -38,7 +38,7 @@ public class LyrcisFragment extends BaseFragment {
     public View onCreateView (LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
         if (mRootView == null){
-            mRootView = inflater.inflate(R.layout.fragment_play_lyrcis, null);
+            mRootView = inflater.inflate(R.layout.fragment_play_play, null);
         }
         return mRootView;
     }

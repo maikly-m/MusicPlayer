@@ -208,8 +208,7 @@ public class PlaySevice extends Service{
                     mProgressHandler.sendMessage(message);
                     EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
-                    EventBus.getDefault().post(Constant.UPDATE_POPUPWINDOW_LOCATION);
-                    EventBus.getDefault().post(Constant.PLAYACTIVITY_PLAY);
+                    EventBus.getDefault().post(Constant.UPDATE_MUSIC_START);
                     break;
                 case MyMediaPlayer.STOP:
                     //发出暂停更新进度消息
@@ -223,7 +222,7 @@ public class PlaySevice extends Service{
                     ProgressThread.flag = false;
                     EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
-                    EventBus.getDefault().post(Constant.PLAYACTIVITY_PAUSE);
+                    EventBus.getDefault().post(Constant.UPDATE_MUSIC_PAUSE);
                     break;
                 case MyMediaPlayer.QUIT:
                     //结束进程
@@ -243,7 +242,7 @@ public class PlaySevice extends Service{
                     mMediaPlayer.isStart = false;
                     EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
-                    EventBus.getDefault().post(Constant.PLAYACTIVITY_PAUSE);
+                    EventBus.getDefault().post(Constant.UPDATE_MUSIC_PAUSE);
                     break;
                 case MyMediaPlayer.PLAY_RESET:
                     ProgressThread.flag = false;
@@ -274,7 +273,7 @@ public class PlaySevice extends Service{
                     while (ProgressThread.flag){
                         EventBus.getDefault().post(Constant.UPDATE_PREGRESS);
                         try{
-                            Thread.sleep(1000);
+                            Thread.sleep(500);
                         } catch (InterruptedException e){
                             e.printStackTrace();
                         }

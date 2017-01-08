@@ -13,18 +13,16 @@ public class Constant {
     public static final String UPDATE = "update"; //更新数据变化
     public static final String UPDATE_FRAGMENT_MODEL = "update_fragment_model"; //更新播放模式变化
     public static final String UPDATE_FRAGMENT_LIST = "update_fragment_list"; //更list变化
-    public static final String UPDATE_POPUPWINDOW_LOCATION =
-            "update_popupwindow_location";//更新数据变化位置
+    public static final String UPDATE_MUSIC_START = "update_music_start";//开始
+    public static final String UPDATE_MUSIC_PAUSE = "update_music_pause";//暂停
+    public static final String UPDATE_MUSIC_STOP = "update_music_stop";//停止
     public static final String UPDATE_INIT = "update_init"; //初始化数据
     public static final String UPDATE_PREGRESS = "update_pregress"; //更新进度
     public static final String UPDATE_PREGRESS_ROTATE = "update_pregress_rotate"; //转动
-    public static final String UPDATE_PLAY_RESET = "update_play_reset"; //清空播放
+    public static final String UPDATE_PLAY_RESET = "update_play_reset"; //清空播放,比如播放时删除了歌曲
     //playActivity
     public static final String PLAYACTIVITY_INITSERVICE =
             "playactivity_initservice";//playactivityl连接上服务
-    public static final String PLAYACTIVITY_PAUSE = "playactivity_pause";
-    public static final String PLAYACTIVITY_PLAY = "playactivity_play";
-
     public static final String PLAYMODEL_ORDER = "顺序播放";
     public static final String PLAYMODEL_RANDOM = "随机播放";
     public static final String PLAYMODEL_CYCLE = "循环播放";

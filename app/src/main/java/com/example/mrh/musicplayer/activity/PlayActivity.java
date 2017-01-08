@@ -19,11 +19,10 @@ import com.example.mrh.musicplayer.activity.adapter.PlayActivityAdapter;
 import com.example.mrh.musicplayer.constant.Constant;
 import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.domain.MusicList;
-import com.example.mrh.musicplayer.fragment.LyrcisFragment;
 import com.example.mrh.musicplayer.fragment.VisualizerFragment;
+import com.example.mrh.musicplayer.fragment.playFragment;
 import com.example.mrh.musicplayer.service.MusicBinder;
 import com.example.mrh.musicplayer.service.PlaySevice;
-import com.example.mrh.musicplayer.utils.DebugUtils;
 import com.example.mrh.musicplayer.utils.Utils;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -191,9 +190,11 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
 
         setView();
     }
+
+
     private void setView () {
-        mList.add(LyrcisFragment.newInstance("lyrcis"));
         mList.add(VisualizerFragment.newInstance("visualizer"));
+        mList.add(playFragment.newInstance("play"));
         mAdapter = new PlayActivityAdapter(getSupportFragmentManager(), mList);
         mVpPlaycontent.setAdapter(mAdapter);
         mIndicatorPalycontent.setViewPager(mVpPlaycontent);
@@ -234,8 +235,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         if (flag.equals(Constant.PLAYACTIVITY_INITSERVICE)){
             initData();
         }
-        if (flag.equals(Constant.UPDATE)){
-            DebugUtils.log_d(TAG, "ssddwww++update+++++");
+        if (flag.equals(Constant.UPDATE_MUSIC_START)){
             mTvPlaycontentTitle.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
                     .mPosition).getTITLE());
             mTvPlaycontentArtist.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer

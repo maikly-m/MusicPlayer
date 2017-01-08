@@ -932,7 +932,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mPlayer.isRestartActivty = false;
             }
         }
-        if (flag.equals(Constant.UPDATE_POPUPWINDOW_LOCATION) && isShowPopuWindow){
+        if (flag.equals(Constant.UPDATE_MUSIC_START) && isShowPopuWindow){
             if (!isUserClick){
                 mConditionMap.put(prePosition, CONDITION_POPLIST_0);
                 mConditionMap.put(mPlayer.mPosition, CONDITION_POPLIST_1);
