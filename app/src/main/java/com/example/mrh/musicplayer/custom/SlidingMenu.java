@@ -195,14 +195,7 @@ public class SlidingMenu extends FrameLayout{
         if (fraction >= 0.99 && ev.getX() < width*(0.7+0.3*0.2)){
             return super.onInterceptTouchEvent(ev);
         }
-        //当viewpager为第一页时可以滑出侧面菜单
-        mCount = 0;
-        List<Fragment> mFragments = mActivity.getSupportFragmentManager().getFragments();
-        for (int i = 0; i < mFragments.size(); i++){
-            if (mFragments.get(i) != null){
-                mCount++;
-            }
-        }
+
         if (mCount <= 1 && !mActivity.mList.get(2).isVisible()){
             //只有ContentFragment的时候
             return helper.shouldInterceptTouchEvent(ev);
@@ -212,6 +205,14 @@ public class SlidingMenu extends FrameLayout{
 
     @Override
     public boolean dispatchTouchEvent (MotionEvent ev) {
+        //当viewpager为第一页时可以滑出侧面菜单
+        mCount = 0;
+        List<Fragment> mFragments = mActivity.getSupportFragmentManager().getFragments();
+        for (int i = 0; i < mFragments.size(); i++){
+            if (mFragments.get(i) != null){
+                mCount++;
+            }
+        }
         if (mCount <= 1 && !mActivity.mList.get(2).isVisible()){
             //只有ContentFragment的时候
             //点击回到MainActivity界面

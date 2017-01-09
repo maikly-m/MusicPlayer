@@ -3,19 +3,28 @@ package com.example.mrh.musicplayer.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Point;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.adapter.PlayActivityAdapter;
+import com.example.mrh.musicplayer.activity.adapter.ShowListAdapter;
+import com.example.mrh.musicplayer.activity.viewHolder.ShowlistViewHolder;
 import com.example.mrh.musicplayer.constant.Constant;
 import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.domain.MusicList;
@@ -33,6 +42,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
+
+import static com.example.mrh.musicplayer.activity.adapter.PopListAdapter.CONDITION_POPLIST_0;
+import static com.example.mrh.musicplayer.activity.adapter.PopListAdapter.CONDITION_POPLIST_1;
+import static com.example.mrh.musicplayer.activity.adapter.PopListAdapter.CONDITION_POPLIST_2;
+import static com.example.mrh.musicplayer.fragment.adapter.SongsListAdapter.CONDITION_SONGSLIST_1;
+import static com.example.mrh.musicplayer.fragment.adapter.SongsListAdapter.CONDITION_SONGSLIST_2;
 
 public class PlayActivity extends BaseActivity implements View.OnClickListener, SeekBar
         .OnSeekBarChangeListener {
@@ -67,14 +83,34 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     private HashMap<String, ArrayList<MusicInfo>> songs_data;
     private PlayActivityAdapter mAdapter;
     private List<Fragment> mList = new ArrayList<>();
+    private PopupWindow pw;
+    private View mRootView;
+    private TextView mTvPlayactivityListname;
+    private RelativeLayout mRlPlayactivity;
+    private ListView mLvPlayactivityList;
+    private ShowListAdapter mShowListAdapter;
+    private HashMap<String, Object> mShouldRevomeView;
+    private TreeMap<Integer, Integer> mConditionMap;
+    public int prePosition = 0;
+    private boolean isUserClick = false;
+    private boolean isShouldRevomeView = false;
+    public View mView;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_play_content);
         initView();
         initService();
+        EventBus.getDefault().register(this);
+        initWakeLock();
+    }
+
+    /**
+     * 保持屏幕常亮
+     */
+    private void initWakeLock () {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void initService () {
@@ -139,7 +175,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
                 mPlayer.pauseMusic();
                 mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_play_176px);
 
-            }else {
+            } else{
                 mPlayer.playMusic();
                 mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_pause_176px);
 
@@ -168,11 +204,127 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
             }
             break;
         case R.id.iv_playcontent_list:
-
+            if (pw != null && pw.isShowing()){
+                pw.dismiss();
+            }else {
+                showListPopuwindow();
+            }
             break;
         default:
             break;
         }
+    }
+
+    private void showListPopuwindow () {
+        if (pw == null){
+            Point p = new Point();
+            getWindowManager().getDefaultDisplay().getSize(p);
+            pw = new PopupWindow((int) (0.6 * p.x), Utils.dip2px(PlayActivity.this, 230));
+            mRootView = View.inflate(PlayActivity.this, R.layout.popupwindow_playactivity_list,
+                    null);
+            mTvPlayactivityListname = (TextView) mRootView.findViewById(R.id
+                    .tv_playactivity_listname);
+            mRlPlayactivity = (RelativeLayout) mRootView.findViewById(R.id.rl_playactivity);
+            mLvPlayactivityList = (ListView) mRootView.findViewById(R.id.lv_playactivity_list);
+
+            String listName = mPlayer.mMediaPlayer.getPlayList().getListName();
+            String substring = null;
+            if (listName.contains(Constant.MUSIC_LIST_ALLSONGS_)){
+                substring = listName.substring(Constant.MUSIC_LIST_ALLSONGS_.length());
+            } else if (listName.contains(Constant.MUSIC_LIST_CUSTOM_)){
+                substring = listName.substring(Constant.MUSIC_LIST_CUSTOM_.length());
+            } else if (listName.contains(Constant.MUSIC_LIST_ARTIST_)){
+                substring = listName.substring(Constant.MUSIC_LIST_ARTIST_.length());
+            } else if (listName.contains(Constant.MUSIC_LIST_ALBUM_)){
+                substring = listName.substring(Constant.MUSIC_LIST_ALBUM_.length());
+            } else if (listName.contains(Constant.MUSIC_LIST_DATA_)){
+                substring = listName.substring(Constant.MUSIC_LIST_DATA_.length());
+            }
+            mTvPlayactivityListname.setText(substring);
+
+            pw.setContentView(mRootView);
+            pw.setAnimationStyle(R.style.popupwindow_list);
+            pw.setBackgroundDrawable(getResources().getDrawable(R.drawable.dialog_bg));
+            pw.setFocusable(true);
+        }
+
+        mShowListAdapter = new ShowListAdapter(PlayActivity.this, mPlayer
+                .mMediaPlayer.getPlayList().getList(), mPlayer.mMusicSongsname);
+        mShouldRevomeView = mShowListAdapter.shouldRevomeView;
+        mConditionMap = mShowListAdapter.conditionMap;
+        mLvPlayactivityList.setAdapter(mShowListAdapter);
+        //设置位置
+        mLvPlayactivityList.setSelectionFromTop(prePosition, Utils.dip2px
+                (PlayActivity.this, 80));
+        mLvPlayactivityList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                isUserClick = true;
+                ShowlistViewHolder showlistViewHolder = (ShowlistViewHolder) view.getTag();
+                if (prePosition != position){
+                    if (isShouldRevomeView){
+                        //滑动条目滚出屏幕后滚回时
+                        isShouldRevomeView = false;
+                        View v = (View) mShouldRevomeView.get("shouldRemoveView");
+                        int p = (int) mShouldRevomeView.get("position");
+                        ShowlistViewHolder _holder = (ShowlistViewHolder) v.getTag();
+                        _holder.mVPlaypopPlay.setVisibility(View.INVISIBLE);
+                        mConditionMap.put(p, CONDITION_POPLIST_0);
+
+                    } else{
+                        ShowlistViewHolder mholder = (ShowlistViewHolder) mView.getTag();
+                        mholder.mVPlaypopPlay.setVisibility(View.INVISIBLE);
+                        mConditionMap.put(prePosition, CONDITION_POPLIST_0);
+                    }
+
+                    showlistViewHolder.mVPlaypopPlay.setVisibility(View.VISIBLE);
+                    mConditionMap.put(position, CONDITION_POPLIST_1);
+                    prePosition = position;
+                    mView = view;
+                } else{
+                    //根据不同的状态设置
+                    switch (mConditionMap.get(position)){
+                    case CONDITION_POPLIST_0:
+                        showlistViewHolder.mVPlaypopPlay.setVisibility(View.VISIBLE);
+                        mConditionMap.put(position, CONDITION_POPLIST_1);
+                        prePosition = position;
+                        mView = view;
+                        break;
+                    case CONDITION_POPLIST_1:
+                        mConditionMap.put(position, CONDITION_SONGSLIST_2);
+                        break;
+                    case CONDITION_POPLIST_2:
+                        mConditionMap.put(position, CONDITION_SONGSLIST_1);
+                        break;
+                    }
+                }
+
+                mPlayer.startMusic(position, mPlayer.mMediaPlayer.getPlayList().getListName());
+            }
+        });
+
+        mLvPlayactivityList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged (AbsListView view, int scrollState) {
+
+            }
+
+            //滚出滚入记录
+            @Override
+            public void onScroll (AbsListView view, int firstVisibleItem,
+                                  int visibleItemCount, int totalItemCount) {
+                if (prePosition != -1 && !isShouldRevomeView){
+                    if (prePosition < firstVisibleItem || prePosition >
+                            firstVisibleItem + visibleItemCount){
+                        isShouldRevomeView = true;
+                    }
+                }
+            }
+        });
+
+        pw.showAsDropDown(mIndicatorPalycontent, 0, Utils.dip2px(PlayActivity.this, -230));
+
     }
 
     private void initData () {
@@ -209,7 +361,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         } else{
             mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_play_176px);
         }
-        switch (mPlayer.mMusicPlaymodel){
+        switch (mPlayer.mMediaPlayer.getPlayList().getPlayModel()){
         case Constant.PLAYMODEL_ORDER:
             mIvPlaycontentPlaymodel.setBackgroundResource(R.drawable.order_64px);
             break;
@@ -232,20 +384,27 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
      */
     @Subscribe(threadMode = ThreadMode.MAIN)       //主线程标识
     public void onEventMainThread (String flag) {
-        if (flag.equals(Constant.PLAYACTIVITY_INITSERVICE)){
+        switch (flag){
+        case Constant.PLAYACTIVITY_INITSERVICE:
             initData();
-        }
-        if (flag.equals(Constant.UPDATE_MUSIC_START)){
+            break;
+        case Constant.UPDATE_MUSIC_START:
             mTvPlaycontentTitle.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
                     .mPosition).getTITLE());
             mTvPlaycontentArtist.setText(mPlayer.mMediaPlayer.getPlayList().getList().get(mPlayer
                     .mPosition).getARTIST());
-        }
-        if (flag.equals(Constant.UPDATE_PREGRESS)){
+            mTvPlaycontentProcessDuration.setText(Utils.formatTime(mPlayer.duration));
+            mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_pause_176px);
+            break;
+        case Constant.UPDATE_MUSIC_PAUSE:
+            mIvPlaycontentPlay.setBackgroundResource(R.drawable.btn_play_176px);
+            break;
+        case Constant.UPDATE_PREGRESS:
             mSbPlaycontentProcess.setProgress(mPlayer.mMediaPlayer.getCurrentPosition() * 100 /
                     mPlayer.duration);
             mTvPlaycontentProcessDuring.setText(Utils.formatTime(mPlayer.mMediaPlayer
                     .getCurrentPosition()));
+            break;
         }
     }
 
@@ -266,6 +425,11 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
             int i = seekBar.getProgress() * mPlayer.duration / 100;
             mPlayer.mMediaPlayer.seekTo(i);
         }
+    }
+
+    @Override
+    protected void onResume () {
+        super.onResume();
     }
 
     @Override

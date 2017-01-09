@@ -60,8 +60,8 @@
 
     <!--mainActivity弹出list的popupwindow动画-->
     <style name="popupwindow_list">
-        <item name="android:windowEnterAnimation">@anim/popuwindow_slide_bottom_enter</item>
-        <item name="android:windowExitAnimation">@anim/popuwindow_slide_bottom_exit</item>
+        <item name="android:windowEnterAnimation">@anim/popuwindow_left_enter</item>
+        <item name="android:windowExitAnimation">@anim/popuwindow_right_exit</item>
     </style>
     <!--自定义seekBar样式-->
     <style name="Custom_SeekBar" parent="Base.Widget.AppCompat.SeekBar">

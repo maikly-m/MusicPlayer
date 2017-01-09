@@ -45,6 +45,10 @@ import java.util.List;
 public class PlaySevice extends Service{
 
     private static final String TAG = "PlaySevice";
+    /**
+     * 进度条更新速度
+     */
+    public static final int UPDATE_SPEED = 200;
     private MusicBinder mBinder;
     public MyMediaPlayer mMediaPlayer;//MediaPlayer开了子线程额
     private PlayThread mPlayThread;
@@ -206,22 +210,16 @@ public class PlaySevice extends Service{
                     mMediaPlayer.start();
                     ProgressThread.flag = true;
                     mProgressHandler.sendMessage(message);
-                    EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
-                    EventBus.getDefault().post(Constant.UPDATE);
                     EventBus.getDefault().post(Constant.UPDATE_MUSIC_START);
                     break;
                 case MyMediaPlayer.STOP:
                     //发出暂停更新进度消息
                     mMediaPlayer.stop();
                     ProgressThread.flag = false;
-                    EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
-                    EventBus.getDefault().post(Constant.UPDATE);
                     break;
                 case MyMediaPlayer.PAUSE:
                     mMediaPlayer.pause();
                     ProgressThread.flag = false;
-                    EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
-                    EventBus.getDefault().post(Constant.UPDATE);
                     EventBus.getDefault().post(Constant.UPDATE_MUSIC_PAUSE);
                     break;
                 case MyMediaPlayer.QUIT:
@@ -233,16 +231,13 @@ public class PlaySevice extends Service{
                     mMediaPlayer.release();
                     mPlayThread.quit();
                     mProgressThread.quit();
-                    EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
                     EventBus.getDefault().post(Constant.UPDATE);
                     break;
                 case MyMediaPlayer.RESET:
                     ProgressThread.flag = false;
                     mMediaPlayer.reset();
                     mMediaPlayer.isStart = false;
-                    EventBus.getDefault().post(Constant.UPDATE_PREGRESS_ROTATE);
-                    EventBus.getDefault().post(Constant.UPDATE);
-                    EventBus.getDefault().post(Constant.UPDATE_MUSIC_PAUSE);
+                    EventBus.getDefault().post(Constant.UPDATE_MUSIC_RESET);
                     break;
                 case MyMediaPlayer.PLAY_RESET:
                     ProgressThread.flag = false;
@@ -273,7 +268,7 @@ public class PlaySevice extends Service{
                     while (ProgressThread.flag){
                         EventBus.getDefault().post(Constant.UPDATE_PREGRESS);
                         try{
-                            Thread.sleep(500);
+                            Thread.sleep(UPDATE_SPEED);
                         } catch (InterruptedException e){
                             e.printStackTrace();
                         }
@@ -674,7 +669,6 @@ public class PlaySevice extends Service{
                                 playList.setPlayModel(mMusicPlaymodel);
                                 mMediaPlayer.setPlayList(playList);
                                 mList = list;
-                                mPosition = i;
                                 duration = Integer.valueOf(list.get(i).getDURATION());
                                 seekMusic(i, mMusicPlaytime);
                                 break;

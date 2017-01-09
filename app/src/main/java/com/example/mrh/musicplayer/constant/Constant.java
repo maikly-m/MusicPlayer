@@ -16,9 +16,10 @@ public class Constant {
     public static final String UPDATE_MUSIC_START = "update_music_start";//开始
     public static final String UPDATE_MUSIC_PAUSE = "update_music_pause";//暂停
     public static final String UPDATE_MUSIC_STOP = "update_music_stop";//停止
+    public static final String UPDATE_MUSIC_RESET = "update_music_reset";//重置
+    public static final String UPDATE_MUSIC_QUIT = "update_music_quit";//退出
     public static final String UPDATE_INIT = "update_init"; //初始化数据
     public static final String UPDATE_PREGRESS = "update_pregress"; //更新进度
-    public static final String UPDATE_PREGRESS_ROTATE = "update_pregress_rotate"; //转动
     public static final String UPDATE_PLAY_RESET = "update_play_reset"; //清空播放,比如播放时删除了歌曲
     //playActivity
     public static final String PLAYACTIVITY_INITSERVICE =

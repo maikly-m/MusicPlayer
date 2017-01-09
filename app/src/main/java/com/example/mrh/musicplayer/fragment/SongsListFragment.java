@@ -262,7 +262,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
             break;
         case R.id.iv_songslist_playmodel:
             //播放顺序
-            openPopupWindow();
+            showPopupWindow();
             break;
         case R.id.iv_songslist_all:
             //点击全选
@@ -593,7 +593,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
         }
     }
 
-    private void openPopupWindow () {
+    private void showPopupWindow () {
         pw = new PopupWindow(Utils.dip2px(context, 100), Utils.dip2px(context, 100));
         View rootView = View.inflate(context, R.layout.popupwindow_songslist_playmodel, null);
         LinearLayout mLlSongslistPopOrder = (LinearLayout) rootView.findViewById(R.id
@@ -664,9 +664,9 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
 
     private void initData () {
         player = activity.mPlayer;
-
-        if (player.mMusicPlaymodel != null){
-            switch (player.mMusicPlaymodel){
+        PlayList playList = player.mMediaPlayer.getPlayList();
+        if (playList != null){
+            switch (playList.getPlayModel()){
             case Constant.PLAYMODEL_ORDER:
                 mIvSongslistPlaymodel.setBackgroundResource(R.drawable.order_64px);
                 mTvSongslistPlaymodel.setText(Constant.PLAYMODEL_ORDER);

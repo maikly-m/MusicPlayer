@@ -23,7 +23,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@drawable/back_64px"/>
-            <TextView
+            <com.example.mrh.musicplayer.custom.MarqueeTextView
                 android:id="@+id/tv_songslist_fragmentname"
                 android:layout_weight="1"
                 android:layout_gravity="center"
@@ -31,6 +31,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="我是songslist"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:textColor="@color/textColor_white"/>
             <ImageView
                 android:id="@+id/iv_songslist_add"

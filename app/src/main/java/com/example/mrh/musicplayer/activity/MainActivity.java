@@ -46,7 +46,6 @@ import com.example.mrh.musicplayer.domain.MusicList;
 import com.example.mrh.musicplayer.fragment.ContentFragment;
 import com.example.mrh.musicplayer.service.MusicBinder;
 import com.example.mrh.musicplayer.service.PlaySevice;
-import com.example.mrh.musicplayer.service.ProgressThread;
 import com.example.mrh.musicplayer.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -917,34 +916,44 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     @Subscribe(threadMode = ThreadMode.MAIN)       //主线程标识
     public void onEventMainThread (String flag) {
-        if (flag.equals(Constant.OK_INITSERVICE)){
+        switch (flag){
+        case Constant.OK_INITSERVICE:
             initData();
-        }
-        if (flag.equals(Constant.UPDATE)){
+            break;
+        case Constant.UPDATE_MUSIC_START:
             mTvMusicName.setText(mPlayer.mMusicSongsname);
             mTvMusicArtist.setText(mPlayer.mMusicArtistname);
-            if (ProgressThread.flag){
-                mIvMusicGo.setBackgroundResource(R.drawable.pause_64px_normal);
-            } else{
-                mIvMusicGo.setBackgroundResource(R.drawable.play_64px_normal);
+            mIvMusicGo.setBackgroundResource(R.drawable.pause_64px_normal);
+            if (isShowPopuWindow){
+                if (!isUserClick){
+                    mConditionMap.put(prePosition, CONDITION_POPLIST_0);
+                    mConditionMap.put(mPlayer.mPosition, CONDITION_POPLIST_1);
+                    prePosition = mPlayer.mPosition;
+                    mPopListAdapter.notifyDataSetChanged();
+                    //设置位置
+                    mLvMainactivityList.setSelectionFromTop(mPlayer.mPosition, Utils.dip2px
+                            (MainActivity.this, 100));
+                }
+                isUserClick = false;
             }
-            if (mPlayer.isRestartActivty){
-                mPlayer.isRestartActivty = false;
-            }
-        }
-        if (flag.equals(Constant.UPDATE_MUSIC_START) && isShowPopuWindow){
-            if (!isUserClick){
-                mConditionMap.put(prePosition, CONDITION_POPLIST_0);
-                mConditionMap.put(mPlayer.mPosition, CONDITION_POPLIST_1);
-                prePosition = mPlayer.mPosition;
-                mPopListAdapter.notifyDataSetChanged();
-                //设置位置
-                mLvMainactivityList.setSelectionFromTop(mPlayer.mPosition, Utils.dip2px
-                        (MainActivity.this, 100));
-            }
-            isUserClick = false;
-        }
-        if (flag.equals(Constant.UPDATE_PLAY_RESET)){
+
+            mOa.start();
+            //开始后才可以调用
+            mOa.setCurrentPlayTime(mCurrentPlayTime);
+            break;
+        case Constant.UPDATE_MUSIC_PAUSE:
+            mIvMusicGo.setBackgroundResource(R.drawable.play_64px_normal);
+
+            mCurrentPlayTime = mOa.getCurrentPlayTime();
+            mOa.cancel();
+            break;
+        case Constant.UPDATE_MUSIC_RESET:
+
+            break;
+        case Constant.UPDATE_MUSIC_QUIT:
+
+            break;
+        case Constant.UPDATE_PLAY_RESET:
             mTvMusicName.setText("");
             mTvMusicArtist.setText("");
             mIvMusicGo.setBackgroundResource(R.drawable.pause_64px_normal);
@@ -954,8 +963,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 mCurrentPlayTime = mOa.getCurrentPlayTime();
                 mOa.cancel();
             }
-        }
-        if (flag.equals(Constant.UPDATE_PREGRESS)){
+            break;
+        case Constant.UPDATE_PREGRESS:
             mSbMusicProcess.setProgress(mPlayer.mMediaPlayer.getCurrentPosition() * 100 /
                     mPlayer.duration);
             mTvMusicProcess.setText(Utils.formatTime(mPlayer.mMediaPlayer.getCurrentPosition
@@ -966,16 +975,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 //开始后才可以调用
                 mOa.setCurrentPlayTime(mCurrentPlayTime);
             }
-        }
-        if (flag.equals(Constant.UPDATE_PREGRESS_ROTATE)){
-            if (ProgressThread.flag){
-                mOa.start();
-                //开始后才可以调用
-                mOa.setCurrentPlayTime(mCurrentPlayTime);
-            } else{
-                mCurrentPlayTime = mOa.getCurrentPlayTime();
-                mOa.cancel();
-            }
+            break;
+        default:
+            break;
         }
     }
 

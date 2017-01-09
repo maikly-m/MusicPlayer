@@ -31,23 +31,31 @@
                 android:textColor="@drawable/textcolor_white2gray"/>
         </LinearLayout >
 
-        <TextView
-            android:gravity="bottom"
+        <com.example.mrh.musicplayer.custom.MarqueeTextView
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
             android:id="@+id/tv_playcontent_title"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
             android:text="歌曲"
             android:textSize="16sp"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:textColor="@color/textColor_white"/>
-        <TextView
+        <com.example.mrh.musicplayer.custom.MarqueeTextView
+            android:gravity="center_horizontal"
             android:layout_below="@id/tv_playcontent_title"
             android:id="@+id/tv_playcontent_artist"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
             android:text="歌手"
             android:textSize="12sp"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
             android:textColor="@color/textColor_white"/>
     </RelativeLayout >
     <android.support.v4.view.ViewPager

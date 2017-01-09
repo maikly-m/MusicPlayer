@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.PlayActivity;
@@ -14,6 +15,7 @@ import com.example.mrh.musicplayer.custom.MyLyrcisView;
 import com.example.mrh.musicplayer.custom.MyVisualizerView;
 import com.example.mrh.musicplayer.domain.LrcContent;
 import com.example.mrh.musicplayer.domain.MusicInfo;
+import com.example.mrh.musicplayer.service.PlaySevice;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 /**
  * Created by MR.H on 2017/1/6 0006.
@@ -39,11 +40,27 @@ public class VisualizerFragment extends BaseFragment {
     private View mRootView;
     private PlayActivity mPlayActivity;
     private MyVisualizerView mVisualizerView;
+    private TextView mTvPlayvisualizer;
     private boolean isDraw = true;
     private MyLyrcisView mLyrcisView;
     private List<LrcContent> mLrcList = new ArrayList<>();
     private String lrc_null;
-    private TreeMap<Integer, String> mTreeMap = new TreeMap<>();
+    private boolean isReset = false;
+    public static final String LRC_NULL = "没有歌词";
+    /**
+     * 正常更新歌词，比如不拖动进度条时
+     */
+    private boolean isNormalUpdate = false;
+    private int mPosition;
+    /**
+     * 上次更新歌词的时间
+     */
+    private long mPreUpdate;
+    private String mLrc_name;
+    /**
+     * 刚进入activity时是否是暂停状态
+     */
+    private boolean mInitPause = true;
 
     public VisualizerFragment () {
         super();
@@ -104,12 +121,13 @@ public class VisualizerFragment extends BaseFragment {
 
     private void initData () {
         mPlayActivity = (PlayActivity) this.context;
-
+        initLrc();
     }
 
     private void initView () {
         mVisualizerView = (MyVisualizerView) mRootView.findViewById(R.id.visualizer_view);
         mLyrcisView = (MyLyrcisView) mRootView.findViewById(R.id.visualizer_lrc);
+        mTvPlayvisualizer = (TextView) mRootView.findViewById(R.id.tv_playvisualizer);
     }
 
     @Override
@@ -125,16 +143,40 @@ public class VisualizerFragment extends BaseFragment {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)       //主线程标识
     public void onEventMainThread (String flag) {
-        if (flag.equals(Constant.UPDATE_MUSIC_START)){
+        switch (flag){
+        case Constant.UPDATE_MUSIC_START:
             isDraw = true;
-        }else if (flag.equals(Constant.UPDATE_MUSIC_PAUSE)){
+            if (isReset){
+                isReset = false;
+                initLrc();
+            } else if (!mInitPause && mPosition != mLyrcisView.position){
+                mPosition = mLyrcisView.position;
+                mPlayActivity.mPlayer.mMediaPlayer.seekTo(mLrcList.get(mPosition).getLrc_time());
+            }
+            break;
+        case Constant.UPDATE_MUSIC_PAUSE:
             isDraw = false;
-
-        }
-        if (flag.equals(Constant.UPDATE_PREGRESS)){
-            initLrc();
-            //更新歌词
-            updateLrc();
+            break;
+        case Constant.UPDATE_MUSIC_RESET:
+            isReset = true;
+            break;
+        case Constant.UPDATE_PREGRESS:
+            if (lrc_null.equals(LRC_NULL)){
+                //更新歌词
+                long mUpdate = mPlayActivity.mPlayer.mMediaPlayer.getCurrentPosition();
+                isNormalUpdate = Math.abs(mUpdate - mPreUpdate) < PlaySevice.UPDATE_SPEED + 100;
+                mPreUpdate = mUpdate;
+                if (!mLyrcisView.isTouch){
+                    if (mLyrcisView.isChange){
+                        mLyrcisView.isChange = false;
+                        mPosition = mLyrcisView.position;
+                        mPlayActivity.mPlayer.mMediaPlayer.seekTo(mLrcList.get(mPosition).getLrc_time());
+                        isNormalUpdate = true;
+                    }
+                    updateLrc();
+                }
+            }
+            break;
         }
     }
 
@@ -142,15 +184,33 @@ public class VisualizerFragment extends BaseFragment {
      * 更新歌词
      */
     private void updateLrc () {
+        mInitPause = false;
         int currentPosition = mPlayActivity.mPlayer.mMediaPlayer.getCurrentPosition();
-        for (int i = 1; i < mLrcList.size() + 1; i++){
-            if (currentPosition < mLrcList.get(i).getLrc_time()){
-                mTreeMap.put(0, mLrcList.get(i-1).getLrc());
-                mLyrcisView.updateLrc(mTreeMap);
-                break;
+
+        if (isNormalUpdate){
+            if (mPosition < mLrcList.size() - 1){
+                if (currentPosition < mLrcList.get(mPosition + 1).getLrc_time()){
+                    mLyrcisView.updateLrc(mPosition);
+                }else {
+                    mLyrcisView.updateLrc(mPosition++);
+                }
+            } else if (mPosition == mLrcList.size() - 1){
+                mLyrcisView.updateLrc(mPosition);
+            }
+        } else{
+            if (currentPosition > mLrcList.get(mLrcList.size() - 1).getLrc_time()){
+                mPosition = mLrcList.size() - 1;
+                mLyrcisView.updateLrc(mLrcList.size() - 1);
+                return;
+            }
+            for (int i = 1; i < mLrcList.size(); i++){
+                if (currentPosition < mLrcList.get(i).getLrc_time()){
+                    mPosition = i-1;
+                    mLyrcisView.updateLrc(i-1);
+                    break;
+                }
             }
         }
-
     }
 
     /**
@@ -159,11 +219,15 @@ public class VisualizerFragment extends BaseFragment {
     private void initLrc () {
         //清除上次的歌词
         mLrcList.clear();
+        lrc_null = LRC_NULL;
         String path = null;
         List<MusicInfo> list = mPlayActivity.mPlayer.mMediaPlayer.getPlayList().getList();
         for (int i = 0; i < list.size(); i++){
             if (list.get(i).getTITLE().equals(mPlayActivity.mPlayer.mMusicSongsname)){
                 path = list.get(i).getDATA();
+                String display_name = list.get(i).getDISPLAY_NAME();
+                int lastIndexOf = display_name.lastIndexOf(".");
+                mLrc_name = display_name.substring(0, lastIndexOf) + ".lrc";
                 break;
             }
         }
@@ -173,11 +237,15 @@ public class VisualizerFragment extends BaseFragment {
         File[] files = new File(subPath).listFiles(new FileFilter() {
             @Override
             public boolean accept (File pathname) {
-                return pathname.getName().equals(mPlayActivity.mPlayer.mMusicSongsname + ".lrc");
+                return pathname.getName().equals(mLrc_name);
             }
         });
-        if (files == null){
-            lrc_null = "歌词不存在";
+        if (files.length <= 0){
+            lrc_null = "歌词没有找到";
+            mTvPlayvisualizer.setVisibility(View.VISIBLE);
+            mLyrcisView.setVisibility(View.INVISIBLE);
+            mTvPlayvisualizer.setText(lrc_null);
+
         }else {
             //开始解析歌词
             FileInputStream fis = null;
@@ -201,10 +269,14 @@ public class VisualizerFragment extends BaseFragment {
                                 TimeStr(splitLrc_data[0])));
                     }
                 }
-
+                //设置到view中
+                mLyrcisView.setList(mLrcList);
             } catch (IOException e){
                 e.printStackTrace();
                 lrc_null = "歌词错误";
+                mTvPlayvisualizer.setVisibility(View.VISIBLE);
+                mLyrcisView.setVisibility(View.INVISIBLE);
+                mTvPlayvisualizer.setText(lrc_null);
             } finally {
                 try{
                     if (br != null){
@@ -220,7 +292,10 @@ public class VisualizerFragment extends BaseFragment {
                     e.printStackTrace();
                 }
             }
-
+        }
+        if (lrc_null.equals(LRC_NULL)){
+            mTvPlayvisualizer.setVisibility(View.INVISIBLE);
+            mLyrcisView.setVisibility(View.VISIBLE);
         }
     }
     private int TimeStr(String timeStr) {

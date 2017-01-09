@@ -76,7 +76,7 @@
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" >
-                    <TextView
+                    <com.example.mrh.musicplayer.custom.MarqueeTextView
                         android:paddingLeft="5dp"
                         android:gravity="center_vertical"
                         android:id="@+id/tv_music_name"
@@ -84,21 +84,17 @@
                         android:layout_height="20dp"
                         android:textSize="14sp"
                         android:ellipsize="marquee"
-                        android:maxLines="1"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
+                        android:singleLine="true"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:text="这是歌曲la"/>
-                    <TextView
+                    <com.example.mrh.musicplayer.custom.MarqueeTextView
                         android:paddingLeft="5dp"
                         android:id="@+id/tv_music_artist"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:textSize="10sp"
                         android:ellipsize="marquee"
-                        android:maxLines="1"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
+                        android:singleLine="true"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:text="这是歌手la"/>
                 </LinearLayout >

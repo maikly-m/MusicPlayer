@@ -5,33 +5,17 @@
               android:layout_height="match_parent"
     >
     <RelativeLayout
-        android:id="@+id/rl_mainactivity"
+        android:id="@+id/rl_playactivity"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="@color/popupwindow_color_bg"
         >
-        <ImageView
-            android:layout_centerVertical="true"
-            android:id="@+id/iv_mainactivity_playmodel"
-            android:layout_marginLeft="15dp"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:background="@drawable/order_64px"/>
-        <TextView
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/iv_mainactivity_playmodel"
-            android:id="@+id/tv_mainactivity_playmodel"
-            android:layout_marginLeft="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="播放顺序"
-            />
         <com.example.mrh.musicplayer.custom.MarqueeTextView
             android:layout_centerInParent="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_centerVertical="true"
-            android:id="@+id/tv_mainactivity_listname"
+            android:id="@+id/tv_playactivity_listname"
             android:layout_width="160dp"
             android:gravity="center"
             android:layout_height="wrap_content"
@@ -51,7 +35,7 @@
     <ListView
         android:background="@color/popupwindow_color_bg"
         android:layout_weight="1"
-        android:id="@+id/lv_mainactivity_list"
+        android:id="@+id/lv_playactivity_list"
         android:layout_width="match_parent"
         android:layout_height="0dp" >
 
