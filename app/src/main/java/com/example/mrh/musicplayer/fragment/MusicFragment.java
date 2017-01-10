@@ -54,7 +54,7 @@ public class MusicFragment extends BaseFragment implements View.OnClickListener 
     public void onClick (View v) {
         switch (v.getId()){
         case R.id.ll_like:
-
+            addFragment(R.id.fl_main, new MyLoveFragment(), "MyLoveFragment");
             break;
         case R.id.ll_music:
             addFragment(R.id.fl_main, new MusicListFragment(), "MusicListFragment");

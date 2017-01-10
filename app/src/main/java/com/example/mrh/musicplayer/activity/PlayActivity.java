@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AbsListView;
@@ -60,6 +61,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     private TextView mTvPlaycontentTitle;
     private TextView mTvPlaycontentArtist;
     private ViewPager mVpPlaycontent;
+    private RelativeLayout mRlPlaycontent;
     private CirclePageIndicator mIndicatorPalycontent;
     private TextView mTvPlaycontentProcessDuration;
     private SeekBar mSbPlaycontentProcess;
@@ -77,6 +79,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     private ArrayList<MusicList> list_album;
     private ArrayList<MusicList> list_data;
     private HashMap<String, ArrayList<MusicInfo>> songs_all;
+    private HashMap<String, ArrayList<MusicInfo>> songs_love;
     private HashMap<String, ArrayList<MusicInfo>> songs_custom;
     private HashMap<String, ArrayList<MusicInfo>> songs_artist;
     private HashMap<String, ArrayList<MusicInfo>> songs_album;
@@ -95,6 +98,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     private boolean isUserClick = false;
     private boolean isShouldRevomeView = false;
     public View mView;
+    private int mHeight;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -138,6 +142,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         mTvPlaycontentTitle = (TextView) findViewById(R.id.tv_playcontent_title);
         mTvPlaycontentArtist = (TextView) findViewById(R.id.tv_playcontent_artist);
         mVpPlaycontent = (ViewPager) findViewById(R.id.vp_playcontent);
+        mRlPlaycontent = (RelativeLayout) findViewById(R.id.rl_playcontent);
         mIndicatorPalycontent = (CirclePageIndicator) findViewById(R.id.indicator_palycontent);
         mTvPlaycontentProcessDuration = (TextView) findViewById(R.id
                 .tv_playcontent_process_duration);
@@ -217,9 +222,10 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
 
     private void showListPopuwindow () {
         if (pw == null){
+            mHeight = Utils.dip2px(PlayActivity.this, 230);
             Point p = new Point();
             getWindowManager().getDefaultDisplay().getSize(p);
-            pw = new PopupWindow((int) (0.6 * p.x), Utils.dip2px(PlayActivity.this, 230));
+            pw = new PopupWindow((int) (0.6 * p.x), mHeight);
             mRootView = View.inflate(PlayActivity.this, R.layout.popupwindow_playactivity_list,
                     null);
             mTvPlayactivityListname = (TextView) mRootView.findViewById(R.id
@@ -322,8 +328,11 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         });
+        int[] p = new int[2];
+        mIndicatorPalycontent.getLocationOnScreen(p);
 
-        pw.showAsDropDown(mIndicatorPalycontent, 0, Utils.dip2px(PlayActivity.this, -230));
+        pw.showAtLocation(mIndicatorPalycontent, Gravity.NO_GRAVITY, p[0],
+                p[1] - mHeight + mRlPlaycontent.getHeight() );
 
     }
 
@@ -335,6 +344,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         list_album = mPlayer.list_album;
         list_data = mPlayer.list_data;
         songs_all = mPlayer.songs_all;
+        songs_love = mPlayer.songs_love;
         songs_custom = mPlayer.songs_custom;
         songs_artist = mPlayer.songs_artist;
         songs_album = mPlayer.songs_album;

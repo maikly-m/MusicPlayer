@@ -20,11 +20,14 @@ public class MusicInfo implements Parcelable {
     private String DATA;
     private String IMAGE;
     private String LYRIC;
+    /**
+     * 输入LOVE或者null
+     */
+    private String LOVE;
 
-    public MusicInfo (String LYRIC, String _ID, String DISPLAY_NAME, String TITLE, String
-            DURATION, String ARTIST, String ALBUM, String YEAR, String MIME_TYPE, String SIZE,
-                      String DATA, String IMAGE) {
-        this.LYRIC = LYRIC;
+    public MusicInfo (String _ID, String DISPLAY_NAME, String TITLE, String DURATION, String
+            ARTIST, String ALBUM, String YEAR, String MIME_TYPE, String SIZE, String DATA, String
+            IMAGE, String LYRIC, String LOVE) {
         this._ID = _ID;
         this.DISPLAY_NAME = DISPLAY_NAME;
         this.TITLE = TITLE;
@@ -36,7 +39,10 @@ public class MusicInfo implements Parcelable {
         this.SIZE = SIZE;
         this.DATA = DATA;
         this.IMAGE = IMAGE;
+        this.LYRIC = LYRIC;
+        this.LOVE = LOVE;
     }
+
     public MusicInfo () {
 
     }
@@ -143,6 +149,18 @@ public class MusicInfo implements Parcelable {
         return 0;
     }
 
+    public String isLOVE () {
+        return LOVE;
+    }
+
+    public void setLOVE (String LOVE) {
+        this.LOVE = LOVE;
+    }
+
+    public static Creator<MusicInfo> getCREATOR () {
+        return CREATOR;
+    }
+
     @Override
     public void writeToParcel (Parcel dest, int flags) {
         dest.writeString(this._ID);
@@ -157,6 +175,7 @@ public class MusicInfo implements Parcelable {
         dest.writeString(this.DATA);
         dest.writeString(this.IMAGE);
         dest.writeString(this.LYRIC);
+        dest.writeString(this.LOVE);
     }
 
     protected MusicInfo (Parcel in) {
@@ -172,6 +191,7 @@ public class MusicInfo implements Parcelable {
         this.DATA = in.readString();
         this.IMAGE = in.readString();
         this.LYRIC = in.readString();
+        this.LOVE = in.readString();
     }
 
     public static final Parcelable.Creator<MusicInfo> CREATOR = new Parcelable.Creator<MusicInfo>() {

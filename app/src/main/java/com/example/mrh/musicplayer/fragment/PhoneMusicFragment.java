@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +42,7 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
     private ListView mLvPhonemusic;
     private ArrayList<MusicInfo> list;
     private PhoneMusicAdapter mAdapter;
-    private ImageView mIvPhonemusicBack;
+    private LinearLayout mLlPhonemusicBack;
     private ImageView mIvPhonemusicAll;
     private TreeMap<Integer, Integer> mConditionMap;
     private int count = 0; //用于判断是否点击了全选
@@ -115,8 +116,8 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
         mLvPhonemusic = (ListView) mRootView.findViewById(R.id.lv_phonemusic);
 
         mBtnSubmitPhonemusic.setOnClickListener(this);
-        mIvPhonemusicBack = (ImageView) mRootView.findViewById(R.id.iv_phonemusic_back);
-        mIvPhonemusicBack.setOnClickListener(this);
+        mLlPhonemusicBack = (LinearLayout) mRootView.findViewById(R.id.ll_phonemusic_back);
+        mLlPhonemusicBack.setOnClickListener(this);
         mIvPhonemusicAll = (ImageView) mRootView.findViewById(R.id.iv_phonemusic_all);
         mIvPhonemusicAll.setOnClickListener(this);
         mTvPhonemusicSelect = (TextView) mRootView.findViewById(R.id.tv_phonemusic_select);
@@ -128,7 +129,7 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
         case R.id.btn_submit_phonemusic:
             writeData();
             break;
-        case R.id.iv_phonemusic_back:
+        case R.id.ll_phonemusic_back:
             showAndRemoveFragment("MusicListFragment", fragmentName);
             break;
         case R.id.iv_phonemusic_all:

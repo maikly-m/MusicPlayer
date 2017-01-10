@@ -7,6 +7,7 @@ package com.example.mrh.musicplayer.constant;
 public class Constant {
     public static final String SYSTEM_MUSIC_LIST_NAME = "musicPlayer";
     public static final String CUSTOM_LIST = "list_custom";
+    public static final String CUSTOM_LIST_LOVE = "最爱";
     //mainActivty
     public static final String OK_DATA = "ok_data"; //初始化加载数据完毕
     public static final String OK_INITSERVICE = "ok_initservice"; //初始化服务

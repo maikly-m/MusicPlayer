@@ -1,7 +1,6 @@
 package com.example.mrh.musicplayer.activity.viewHolder;
 
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mrh.musicplayer.R;
@@ -15,7 +14,6 @@ public class PoplistViewHolder {
     public TextView mTvMainpopOrder;
     public TextView mTvMainpopListname;
     public TextView mTvMainlistArtist;
-    public ImageView mIvMainpopDelete;
 
    private PoplistViewHolder (View rootView) {
        this.rootView = rootView;
@@ -23,7 +21,6 @@ public class PoplistViewHolder {
        this.mTvMainpopOrder = (TextView) rootView.findViewById(R.id.tv_mainpop_order);
        this.mTvMainpopListname = (TextView) rootView.findViewById(R.id.tv_mainpop_listname);
        this.mTvMainlistArtist = (TextView) rootView.findViewById(R.id.tv_mainlist_artist);
-       this.mIvMainpopDelete = (ImageView) rootView.findViewById(R.id.iv_mainpop_delete);
        rootView.setTag(this);
    }
    public static PoplistViewHolder getViewHolder(View rootView){

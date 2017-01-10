@@ -110,11 +110,32 @@
                 android:layout_height="25dp"
                 android:background="@drawable/delete_64px"/>
             <TextView
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@drawable/textcolor_white2gray"
                 android:text="删除"/>
+        </LinearLayout >
+        <LinearLayout
+            android:gravity="center"
+            android:id="@+id/ll_listsplay_love"
+            android:padding="8dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="vertical"
+            android:layout_width="50dp"
+            android:layout_height="match_parent" >
+            <ImageView
+                android:id="@+id/iv_listplay_love"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/love_48px_normal"/>
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@drawable/textcolor_white2gray"
+                android:text="收藏"/>
         </LinearLayout >
         <LinearLayout
             android:gravity="center"
@@ -128,9 +149,9 @@
             <ImageView
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:background="@drawable/delete_64px"/>
+                android:background="@drawable/info_48px"/>
             <TextView
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@drawable/textcolor_white2gray"

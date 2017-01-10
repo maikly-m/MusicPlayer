@@ -3,6 +3,7 @@ package com.example.mrh.musicplayer.fragment.adapter;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -22,6 +23,7 @@ import com.example.mrh.musicplayer.activity.MainActivity;
 import com.example.mrh.musicplayer.constant.Constant;
 import com.example.mrh.musicplayer.custom.MyImageView;
 import com.example.mrh.musicplayer.domain.MusicInfo;
+import com.example.mrh.musicplayer.domain.MusicList;
 import com.example.mrh.musicplayer.fragment.AllMusicFragment;
 import com.example.mrh.musicplayer.fragment.AllMusicVPFragment;
 import com.example.mrh.musicplayer.fragment.SongsListFragment;
@@ -248,12 +250,72 @@ public class SongsListAdapter extends BaseAdapter {
                 showDeleteView(cv);
             }
         });
+        cv.mLlListsplayLove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View v) {
+                addOrRemoveMyLove(cv);
+            }
+        });
         cv.mLlListsplayDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
                 showDetailView(cv);
             }
         });
+    }
+
+    /**
+     * 加入最爱列表
+     */
+    private void addOrRemoveMyLove (SongsListViewHolder cv) {
+        ArrayList<MusicInfo> musicInfos = ((MainActivity) context).songs_love.get(Constant
+                .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
+        boolean isHave = false;
+        if (musicInfos != null){
+            for (int i = 0; i < musicInfos.size(); i++){
+                if (this.list.get(position).getDATA().equals(musicInfos.get(i).getDATA())){
+                    isHave = true;
+
+                    Utils.deleteMusicInfo(context, Constant
+                            .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE, "TITLE = " +
+                            "?", new String[]{musicInfos.get(i).getTITLE()});
+                    musicInfos.remove(i);
+                    break;
+                }
+            }
+        }
+        if (isHave){
+            cv.mIvListsplayLove.setBackgroundResource(R.drawable.love_48px_normal);
+        } else{
+            List<ContentValues> lcv = new ArrayList<>();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("_ID", list.get(position).get_ID());
+            contentValues.put("DISPLAY_NAME", list.get(position).getDISPLAY_NAME());
+            contentValues.put("TITLE", list.get(position).getTITLE());
+            contentValues.put("DURATION", list.get(position).getDURATION());
+            contentValues.put("ARTIST", list.get(position).getARTIST());
+            contentValues.put("ALBUM", list.get(position).getALBUM());
+            contentValues.put("YEAR", list.get(position).getYEAR());
+            contentValues.put("MIME_TYPE", list.get(position).getMIME_TYPE());
+            contentValues.put("SIZE", list.get(position).getSIZE());
+            contentValues.put("DATA", list.get(position).getDATA());
+            contentValues.put("IMAGE", list.get(position).getIMAGE());
+            contentValues.put("LYRIC", list.get(position).getLYRIC());
+            lcv.add(contentValues);
+            Utils.setMusicInfo(context, Constant
+                    .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE, lcv);
+            if (musicInfos == null){
+                ArrayList<MusicInfo> Infos = new ArrayList<>();
+                Infos.add(list.get(position));
+                ((MainActivity) context).songs_love.put(Constant
+                        .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE, Infos);
+                MusicList musicList = new MusicList();
+                musicList.setListName(Constant
+                        .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
+                ((MainActivity) context).list_custom.add(musicList);
+            }
+            cv.mIvListsplayLove.setBackgroundResource(R.drawable.love_48px_pressed);
+        }
     }
 
     private void showDetailView (SongsListViewHolder cv) {
@@ -411,8 +473,24 @@ public class SongsListAdapter extends BaseAdapter {
             } else{
                 lp.addRule(RelativeLayout.BELOW);
                 layoutParams.addRule(RelativeLayout.BELOW, R.id.ll_listsplay_);
-                rootView.addView(cv.mLlListsplay, lp);
                 rootView.addView(cv.mLlListsplayView, layoutParams);
+                rootView.addView(cv.mLlListsplay, lp);
+            }
+            ArrayList<MusicInfo> musicInfos = ((MainActivity) context).songs_love.get(Constant
+                    .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
+            boolean isHave = false;
+            if (musicInfos != null){
+                for (int i = 0; i < musicInfos.size(); i++){
+                    if (this.list.get(position).getDATA().equals(musicInfos.get(i).getDATA())){
+                        isHave = true;
+                        break;
+                    }
+                }
+            }
+            if (isHave){
+                cv.mIvListsplayLove.setBackgroundResource(R.drawable.love_48px_pressed);
+            } else{
+                cv.mIvListsplayLove.setBackgroundResource(R.drawable.love_48px_normal);
             }
             ValueAnimator va = ValueAnimator.ofInt(0, mHeight);
             va.setDuration(50);

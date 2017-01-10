@@ -22,6 +22,8 @@ public class SongsListViewHolder {
     public TextView mTvListsplaySinger;
     public MyImageView mIvListsplayMore;
     public LinearLayout mLlListsplayDelete;
+    public LinearLayout mLlListsplayLove;
+    public ImageView mIvListsplayLove;
     public LinearLayout mLlListsplayDetail;
     public LinearLayout mLlListsplayView;
 
@@ -37,6 +39,10 @@ public class SongsListViewHolder {
        this.mIvListsplayMore = (MyImageView) rootView.findViewById(R.id.iv_listsplay_more);
        this.mLlListsplayDelete = (LinearLayout) rootView.findViewById(R.id
                .ll_listsplay_delete);
+       this.mLlListsplayLove = (LinearLayout) rootView.findViewById(R.id
+               .ll_listsplay_love);
+       this.mIvListsplayLove = (ImageView) rootView.findViewById(R.id
+               .iv_listplay_love);
        this.mLlListsplayDetail = (LinearLayout) rootView.findViewById(R.id
                .ll_listsplay_detail);
        this.mLlListsplayView = (LinearLayout) rootView.findViewById(R.id.ll_listsplay_view);

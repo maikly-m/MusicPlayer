@@ -40,6 +40,7 @@ import com.example.mrh.musicplayer.fragment.adapter.SendtoAdapter;
 import com.example.mrh.musicplayer.fragment.adapter.SongsListAdapter;
 import com.example.mrh.musicplayer.fragment.viewHolder.SongsListViewHolder;
 import com.example.mrh.musicplayer.service.PlaySevice;
+import com.example.mrh.musicplayer.utils.SqlHelper;
 import com.example.mrh.musicplayer.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -73,7 +74,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     private HashMap<String, Object> mShouldRevomeView;
     private boolean isShouldRevomeView = false;
     private boolean isSelectting = false;
-    private ImageView mIvSongslistBack;
+    private LinearLayout mLlSongslistBack;
     private LinearLayout mLlSongslist;
     private ImageView mIvSongslistAll;
     private TextView mTvSongslistSelect;
@@ -178,7 +179,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
         }
 
         this.RlSongslist = (RelativeLayout) mRootView.findViewById(R.id.rl_songslist); //最大的父容器
-        this.mIvSongslistBack = (ImageView) mRootView.findViewById(R.id.iv_songslist_back);
+        this.mLlSongslistBack = (LinearLayout) mRootView.findViewById(R.id.ll_songslist_back);
         this.mTvSongslistFragmentname = (TextView) mRootView.findViewById(R.id
                 .tv_songslist_fragmentname);
         this.mIvSongslistAdd = (ImageView) mRootView.findViewById(R.id.iv_songslist_add);
@@ -207,7 +208,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
         this.mLlSongslistBottom = (LinearLayout) mRootView.findViewById(R.id
                 .ll_songslist_bottom);
 
-        mIvSongslistBack.setOnClickListener(this);
+        mLlSongslistBack.setOnClickListener(this);
         mIvSongslistAdd.setOnClickListener(this);
         mLlSongslist.setOnClickListener(this);
         mIvSongslistAll.setOnClickListener(this);
@@ -237,7 +238,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onClick (View v) {
         switch (v.getId()){
-        case R.id.iv_songslist_back:
+        case R.id.ll_songslist_back:
             if (fm.findFragmentByTag("MusicListFragment") != null){
                 showAndRemoveFragment("MusicListFragment", fragmentName);
             }else if (fm.findFragmentByTag("AllMusicFragment") != null){
@@ -441,6 +442,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                 PlaySevice player = ((MainActivity) context).mPlayer;
                 int size = mConditionMap.size();
                 int k = -1;
+                SqlHelper sqlHelper = new SqlHelper(context);
                 for (int i = 0; i < size; i++){
                     k++;
                     if (mConditionMap.get(i).equals(CONDITION_SONGSLIST_4)){
@@ -459,7 +461,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                             case Constant.MUSIC_LIST_ALLSONGS_:
                                 break;
                             case Constant.MUSIC_LIST_CUSTOM_:
-                                Utils.deleteMusicInfo(context, fragmentName, "TITLE = ?", new
+                                sqlHelper.deleteMusicInfo(fragmentName, "TITLE = ?", new
                                         String[]{list.get(k).getTITLE()});
                                 break;
                             case Constant.MUSIC_LIST_ARTIST_:
@@ -474,6 +476,8 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                         k--;
                     }
                 }
+                sqlHelper.closeDb();
+
                 //更新conditionMap
                 mAdapter.setConditionMap();
                 if (Constant.MUSIC_LIST_CUSTOM_.equals(fragmentPrefix)){

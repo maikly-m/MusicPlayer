@@ -3,6 +3,7 @@ package com.example.mrh.musicplayer.service;
 import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,6 +27,7 @@ import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.domain.MusicList;
 import com.example.mrh.musicplayer.domain.PlayList;
 import com.example.mrh.musicplayer.utils.DebugUtils;
+import com.example.mrh.musicplayer.utils.SqlHelper;
 import com.example.mrh.musicplayer.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -38,11 +40,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST;
+
 /**
  * Created by MR.H on 2016/12/2 0002.
  */
 
-public class PlaySevice extends Service{
+public class PlaySevice extends Service {
 
     private static final String TAG = "PlaySevice";
     /**
@@ -63,6 +67,7 @@ public class PlaySevice extends Service{
     public ArrayList<MusicList> list_album;
     public ArrayList<MusicList> list_data;
     public HashMap<String, ArrayList<MusicInfo>> songs_all = new HashMap<>();
+    public HashMap<String, ArrayList<MusicInfo>> songs_love = new HashMap<>();
     public HashMap<String, ArrayList<MusicInfo>> songs_custom = new HashMap<>();
     public HashMap<String, ArrayList<MusicInfo>> songs_artist;
     public HashMap<String, ArrayList<MusicInfo>> songs_album;
@@ -131,17 +136,19 @@ public class PlaySevice extends Service{
         new Thread() {
             @Override
             public void run () {
+                SqlHelper sqlHelper = new SqlHelper(PlaySevice.this);
                 mAllSongs = Utils.getAllSongs();
-                list_allsongs.add(new MusicList(Constant.MUSIC_LIST_ALLSONGS_+"所有音乐", mAllSongs.size
+                list_allsongs.add(new MusicList(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs
+                        .size
                         ()));
-                songs_all.put(Constant.MUSIC_LIST_ALLSONGS_+"所有音乐", mAllSongs);
-                list_custom = Utils.getList(PlaySevice.this, Constant.CUSTOM_LIST, null, null);
+                songs_all.put(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs);
+                list_custom = sqlHelper.getList(Constant.CUSTOM_LIST, null, null);
                 //自定义列表获取数据
                 if (list_custom.size() != 0 && mAllSongs.size() != 0){
                     for (MusicList m : list_custom){
                         ArrayList<MusicInfo> transfer = new ArrayList<>();
-                        ArrayList<MusicInfo> musicInfo = Utils.getMusicInfo(PlaySevice.this, m
-                                .getListName(), null, null);
+                        ArrayList<MusicInfo> musicInfo = sqlHelper.getMusicInfo(m.getListName(),
+                                null, null);
                         for (int i = 0; i < mAllSongs.size(); i++){
                             for (int j = 0; j < musicInfo.size(); j++){
                                 //判断文件是否还存在
@@ -150,27 +157,44 @@ public class PlaySevice extends Service{
                                 }
                             }
                         }
-                        songs_custom.put(m.getListName(), transfer);
+                        if (m.getListName().equals(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                                .CUSTOM_LIST_LOVE)) {
+                            songs_love.put(m.getListName(), transfer);
+                        }else {
+                            songs_custom.put(m.getListName(), transfer);
+                        }
                     }
+                } else if (list_custom == null){
+                    //创建最爱列表
+                    sqlHelper.CreatePlayTable(CUSTOM_LIST);
+                    ContentValues cv = new ContentValues();
+                    cv.put("listName", Constant.MUSIC_LIST_CUSTOM_ + Constant
+                            .CUSTOM_LIST_LOVE);
+                    sqlHelper.setList(CUSTOM_LIST, cv);
+                    sqlHelper.CreateMusicTable(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                            .CUSTOM_LIST_LOVE);
                 }
+                //关闭数据库
+                sqlHelper.closeDb();
                 //系统列表获取数据,每次开启服务就重建一次
                 if (mAllSongs.size() != 0){
                     HashMap<String, Object> hashMap1 = Utils.sortAndCreateList(mAllSongs, "artist");
-                    list_artist= (ArrayList<MusicList>) hashMap1.get("listName");
+                    list_artist = (ArrayList<MusicList>) hashMap1.get("listName");
                     songs_artist = (HashMap<String, ArrayList<MusicInfo>>) hashMap1.get("list");
 
                     HashMap<String, Object> hashMap2 = Utils.sortAndCreateList(mAllSongs, "album");
-                    list_album= (ArrayList<MusicList>) hashMap2.get("listName");
+                    list_album = (ArrayList<MusicList>) hashMap2.get("listName");
                     songs_album = (HashMap<String, ArrayList<MusicInfo>>) hashMap2.get("list");
 
                     HashMap<String, Object> hashMap3 = Utils.sortAndCreateList(mAllSongs, "data");
-                    list_data= (ArrayList<MusicList>) hashMap3.get("listName");
+                    list_data = (ArrayList<MusicList>) hashMap3.get("listName");
                     songs_data = (HashMap<String, ArrayList<MusicInfo>>) hashMap3.get("list");
                 }
                 getSpData();
                 initMediaEffect();
                 dataReady = true;
                 EventBus.getDefault().post(Constant.OK_DATA);
+
             }
         }.start();
 
@@ -183,7 +207,7 @@ public class PlaySevice extends Service{
             mEqualizer.setBandLevel((short) 2, (short) mMusicEffectEqulizer03);
             mEqualizer.setBandLevel((short) 3, (short) mMusicEffectEqulizer04);
             mEqualizer.setBandLevel((short) 4, (short) mMusicEffectEqulizer05);
-        }else {
+        } else{
             mEqualizer.usePreset((short) mMusicEffectPresetreverb);
         }
         mBassBoost.setStrength((short) mMusicEffectBassboost);
@@ -289,7 +313,7 @@ public class PlaySevice extends Service{
         mPlayHandler.sendMessage(message);
         switch (mMediaPlayer.getPlayList().getPlayModel()){
         case Constant.PLAYMODEL_ORDER:
-            if (mPosition >= 0 && mPosition < mList.size()-1){
+            if (mPosition >= 0 && mPosition < mList.size() - 1){
                 setSongPath(++mPosition);
                 MusicInfo musicInfo = mList.get(mPosition);
                 mMusicSongsname = musicInfo.getTITLE();
@@ -298,7 +322,7 @@ public class PlaySevice extends Service{
             }
             break;
         case Constant.PLAYMODEL_RANDOM:
-            int p = (int) (Math.random() * (mList.size()-1) + 0.5f);
+            int p = (int) (Math.random() * (mList.size() - 1) + 0.5f);
             setSongPath(p);
             MusicInfo musicInfo = mList.get(p);
             mMusicSongsname = musicInfo.getTITLE();
@@ -307,9 +331,9 @@ public class PlaySevice extends Service{
             mPosition = p;
             break;
         case Constant.PLAYMODEL_CYCLE:
-            if (mPosition >= 0 && mPosition < mList.size()-1){
+            if (mPosition >= 0 && mPosition < mList.size() - 1){
                 setSongPath(++mPosition);
-            }else {
+            } else{
                 mPosition = 0;
                 setSongPath(mPosition);
             }
@@ -330,7 +354,7 @@ public class PlaySevice extends Service{
         mPlayHandler.sendMessage(message);
         switch (mMediaPlayer.getPlayList().getPlayModel()){
         case Constant.PLAYMODEL_ORDER:
-            if (mPosition >= 0 && mPosition < mList.size()-1){
+            if (mPosition >= 0 && mPosition < mList.size() - 1){
                 setSongPath(--mPosition);
                 MusicInfo musicInfo = mList.get(mPosition);
                 mMusicSongsname = musicInfo.getTITLE();
@@ -339,7 +363,7 @@ public class PlaySevice extends Service{
             }
             break;
         case Constant.PLAYMODEL_RANDOM:
-            int p = (int) (Math.random() * (mList.size()-1) + 0.5f);
+            int p = (int) (Math.random() * (mList.size() - 1) + 0.5f);
             setSongPath(p);
             MusicInfo musicInfo = mList.get(p);
             mMusicSongsname = musicInfo.getTITLE();
@@ -348,9 +372,9 @@ public class PlaySevice extends Service{
             mPosition = p;
             break;
         case Constant.PLAYMODEL_CYCLE:
-            if (mPosition >= 0 && mPosition < mList.size()-1){
+            if (mPosition >= 0 && mPosition < mList.size() - 1){
                 setSongPath(--mPosition);
-            }else {
+            } else{
                 mPosition = 0;
                 setSongPath(mPosition);
             }
@@ -361,6 +385,7 @@ public class PlaySevice extends Service{
             break;
         }
     }
+
     //从sp中获取数据
     public void getSpData () {
         //取出播放状态
@@ -383,7 +408,7 @@ public class PlaySevice extends Service{
             mMusicEffectEqulizer03 = sp1.getInt(Constant.MUSIC_EFFECT_EQULIZER_03, 0);
             mMusicEffectEqulizer04 = sp1.getInt(Constant.MUSIC_EFFECT_EQULIZER_04, 0);
             mMusicEffectEqulizer05 = sp1.getInt(Constant.MUSIC_EFFECT_EQULIZER_05, 0);
-        }else {
+        } else{
             mMusicEffectPresetreverb = sp1.getInt(Constant.MUSIC_EFFECT_PRESETREVERB, 0);
         }
         mMusicEffectBassboost = sp1.getInt(Constant.MUSIC_EFFECT_BASSBOOST, 0);
@@ -410,17 +435,18 @@ public class PlaySevice extends Service{
     /**
      * playOrPause
      */
-    public void playOrPause(){
+    public void playOrPause () {
         if (ProgressThread.flag){
             pauseMusic();
-        }else {
+        } else{
             playMusic();
         }
     }
+
     /**
      * pause
      */
-    public void pauseMusic(){
+    public void pauseMusic () {
         Message message = Message.obtain();
         message.what = MyMediaPlayer.PAUSE;
         mPlayHandler.sendMessage(message);
@@ -429,7 +455,7 @@ public class PlaySevice extends Service{
     /**
      * play
      */
-    public void playMusic(){
+    public void playMusic () {
         if (mMediaPlayer.isStart){
             Message message = Message.obtain();
             message.what = MyMediaPlayer.START;
@@ -442,7 +468,7 @@ public class PlaySevice extends Service{
     /**
      * stop
      */
-    public void stopMusic(){
+    public void stopMusic () {
         Message message = Message.obtain();
         message.what = MyMediaPlayer.STOP;
         mPlayHandler.sendMessage(message);
@@ -451,16 +477,18 @@ public class PlaySevice extends Service{
     /**
      * reset
      */
-    public void resetPlayMusic (){
+    public void resetPlayMusic () {
         Message message = Message.obtain();
         message.what = MyMediaPlayer.PLAY_RESET;
         mPlayHandler.sendMessage(message);
     }
+
     /**
      * 定位歌曲播放位置,初始化调用
+     *
      * @param position
      */
-    public void seekMusic(int position, final int msec){
+    public void seekMusic (int position, final int msec) {
         MusicInfo musicInfo = mList.get(position);
         final String path = musicInfo.getDATA();
         mPlayHandler.post(new Runnable() {
@@ -481,10 +509,11 @@ public class PlaySevice extends Service{
 
     /**
      * 播放音乐
+     *
      * @param position
      * @param listName
      */
-    public void startMusic (int position, String listName){
+    public void startMusic (int position, String listName) {
         mIsExist = true;
         //判断是否为同一张列表
         Message message = Message.obtain();
@@ -500,16 +529,16 @@ public class PlaySevice extends Service{
                     duration = Integer.valueOf(musicInfo.getDURATION());
                     setSongPath(position);
                     this.mPosition = position;
-                }else if (!mMediaPlayer.isPlaying()){
+                } else if (!mMediaPlayer.isPlaying()){
                     //暂停状态，开始播放
                     message.what = MyMediaPlayer.START;
                     mPlayHandler.sendMessage(message);
-                }else if(mMediaPlayer.isPlaying()) {
+                } else if (mMediaPlayer.isPlaying()){
                     //播放状态，点击暂停
                     message.what = MyMediaPlayer.PAUSE;
                     mPlayHandler.sendMessage(message);
                 }
-            }else {
+            } else{
                 //不同的歌曲
                 MusicInfo musicInfo = mList.get(position);
                 this.mMusicSongsname = musicInfo.getTITLE();
@@ -520,7 +549,7 @@ public class PlaySevice extends Service{
                 setSongPath(position);
                 this.mPosition = position;
             }
-        }else {
+        } else{
             //另一列表的歌曲
             mList = mMediaPlayer.getPlayList().getList();//播放列表
             MusicInfo musicInfo = mList.get(position);
@@ -589,7 +618,7 @@ public class PlaySevice extends Service{
             edit.putInt(Constant.MUSIC_EFFECT_EQULIZER_03, mEqualizer.getBandLevel((short) 2));
             edit.putInt(Constant.MUSIC_EFFECT_EQULIZER_04, mEqualizer.getBandLevel((short) 3));
             edit.putInt(Constant.MUSIC_EFFECT_EQULIZER_05, mEqualizer.getBandLevel((short) 4));
-        }else {
+        } else{
             edit.putBoolean(Constant.MUSIC_EFFECT_EQULIZER, false);
             edit.putInt(Constant.MUSIC_EFFECT_PRESETREVERB, mPresetReverbName);
         }
@@ -603,6 +632,7 @@ public class PlaySevice extends Service{
         return super.onUnbind(intent);
 
     }
+
     public Activity getActivity () {
         return mActivity.get();
     }
@@ -622,7 +652,7 @@ public class PlaySevice extends Service{
     /**
      * 设置均衡器
      */
-    private void setEqualizer(){
+    private void setEqualizer () {
         mEqualizer = new Equalizer(0, mMediaPlayer.getAudioSessionId());
         mEqualizer.setEnabled(true); //开始起作用
     }
@@ -659,7 +689,7 @@ public class PlaySevice extends Service{
                         list = songs_data.get(mMusicListname);
                     }
                     if (list != null){
-                        for (int i=0; i < list.size(); i++){
+                        for (int i = 0; i < list.size(); i++){
                             if (list.get(i).getTITLE().equals(mMusicSongsname)){
                                 //存在上次播放的歌曲
                                 mIsExist = true;
@@ -684,7 +714,7 @@ public class PlaySevice extends Service{
                 int process = mMusicPlaytime * 100 / duration;
                 mainActivity.mSbMusicProcess.setProgress(process);
                 mainActivity.mTvMusicProcess.setText(Utils.formatTime(mMusicPlaytime));
-            }else {
+            } else{
                 mainActivity.mTvMusicName.setText("");
                 mainActivity.mTvMusicArtist.setText("");
             }

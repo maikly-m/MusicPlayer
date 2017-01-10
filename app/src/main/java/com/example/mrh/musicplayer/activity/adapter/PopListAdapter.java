@@ -75,13 +75,6 @@ public class PopListAdapter extends BaseAdapter {
         poplistViewHolder.mTvMainpopOrder.setText(String.valueOf(position + 1));
         poplistViewHolder.mTvMainpopListname.setText(list.get(position).getTITLE());
         poplistViewHolder.mTvMainlistArtist.setText(list.get(position).getARTIST());
-        poplistViewHolder.mIvMainpopDelete.setBackgroundResource(R.drawable.delete_64px);
-        poplistViewHolder.mIvMainpopDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick (View v) {
-
-            }
-        });
         if (position == ((MainActivity)context).prePosition){
             ((MainActivity)context).mView = poplistViewHolder.rootView;
             shouldRevomeView.put("shouldRemoveView", poplistViewHolder.rootView);

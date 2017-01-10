@@ -8,7 +8,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.BaseActivity;
@@ -27,7 +27,7 @@ public class AllMusicFragment extends BaseFragment implements View.OnClickListen
     private static final String TAG = "AllMusicFragment";
     private View mRootView;
     private List<Fragment> mList = new ArrayList<>();
-    private ImageView mIvAllmusicBack;
+    private LinearLayout mLlAllmusicBack;
     private TabPageIndicator mAllmusicIndicator;
     private ViewPager mVpAllmusic;
 
@@ -57,8 +57,8 @@ public class AllMusicFragment extends BaseFragment implements View.OnClickListen
             }
         }, fragmentName);
 
-        mIvAllmusicBack = (ImageView) mRootView.findViewById(R.id.iv_allmusic_back);
-        mIvAllmusicBack.setOnClickListener(this);
+        mLlAllmusicBack = (LinearLayout) mRootView.findViewById(R.id.ll_allmusic_back);
+        mLlAllmusicBack.setOnClickListener(this);
         mAllmusicIndicator = (TabPageIndicator) mRootView.findViewById(R.id.allmusic_indicator);
         mVpAllmusic = (ViewPager) mRootView.findViewById(R.id.vp_allmusic);
     }
@@ -66,7 +66,7 @@ public class AllMusicFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onClick (View v) {
         switch (v.getId()){
-        case R.id.iv_allmusic_back:
+        case R.id.ll_allmusic_back:
             showAndRemoveFragment("ContentFragment", fragmentName);
             break;
         default:

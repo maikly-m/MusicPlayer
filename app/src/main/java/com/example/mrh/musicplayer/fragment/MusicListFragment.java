@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST;
+import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST_LOVE;
 
 /**
  * Created by MR.H on 2016/12/4 0004.
@@ -44,7 +46,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     private static final String TAG = "MusicListFragment";
 
     private View mRootView;
-    private ImageView mIvListBack;
+    private LinearLayout mLlListBack;
     private ImageView mIvAddMusic;
     private AlertDialog mDialog;
     private EditText mEtMusiclist;
@@ -88,15 +90,23 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
 
     private void initData () {
         list = activity.list_custom;
+        final List<MusicList> musicLists = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++){
+            if (list.get(i).getListName().equals(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                    .CUSTOM_LIST_LOVE)){
+                continue;
+            }
+            musicLists.add(list.get(i));
+        }
         songs = activity.songs_custom;
-        mTvListNum.setText("歌单("+list.size()+")");
-        mAdapter = new MusicListAdapter(context, this, list);
+        mTvListNum.setText("歌单("+musicLists.size()+")");
+        mAdapter = new MusicListAdapter(context, this, musicLists);
         mLvMusiclist.setAdapter(mAdapter);
         mLvMusiclist.setDividerHeight(0);
         mLvMusiclist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                selectFragment(list.get(position).getListName());
+                selectFragment(musicLists.get(position).getListName());
             }
         });
     }
@@ -117,12 +127,12 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     }
 
     private void initView () {
-        mIvListBack = (ImageView) mRootView.findViewById(R.id.iv_list_back);
+        mLlListBack = (LinearLayout) mRootView.findViewById(R.id.ll_list_back);
         mIvAddMusic = (ImageView) mRootView.findViewById(R.id.iv_add_music);
         mLvMusiclist = (ListView) mRootView.findViewById(R.id.lv_musiclist);
         mTvListNum = (TextView) mRootView.findViewById(R.id.tv_list_num);
 
-        mIvListBack.setOnClickListener(this);
+        mLlListBack.setOnClickListener(this);
         mIvAddMusic.setOnClickListener(this);
         mTvListNum.setOnClickListener(this);
 
@@ -140,7 +150,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     @Override
     public void onClick (View v) {
         switch (v.getId()){
-        case R.id.iv_list_back:
+        case R.id.ll_list_back:
             showAndRemoveFragment("ContentFragment", fragmentName);
             break;
         case R.id.iv_add_music:
@@ -165,7 +175,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         if (list != null){
             for (int i = 0; i < list.size(); i++){
                 if (list.get(i).getListName().equals(name) || list.get(i).getListName().equals
-                        (CUSTOM_LIST)){
+                        (CUSTOM_LIST) || list.get(i).getListName().equals(CUSTOM_LIST_LOVE)){
                     Toast.makeText(context, "名字重复了，重新输入", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -183,6 +193,12 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     private void openDataBase (String name) {
         if (list == null){
             SqlHelper.CreatePlayTable(context, CUSTOM_LIST);
+            ContentValues cv = new ContentValues();
+            cv.put("listName", Constant.MUSIC_LIST_CUSTOM_ + Constant
+                    .CUSTOM_LIST_LOVE);
+            Utils.setList(context, CUSTOM_LIST, cv);
+            SqlHelper.CreateMusicTable(context, Constant.MUSIC_LIST_CUSTOM_ + Constant
+                    .CUSTOM_LIST_LOVE);
         }
         ContentValues cv = new ContentValues();
         cv.put("listName", name);

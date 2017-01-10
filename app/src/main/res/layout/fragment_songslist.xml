@@ -15,14 +15,25 @@
             android:layout_height="45dp"
             android:background="@color/colorPrimary"
             >
-            <ImageView
-                android:id="@+id/iv_songslist_back"
-                android:layout_gravity="center_vertical"
+            <LinearLayout
+                android:id="@+id/ll_songslist_back"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@drawable/back_64px"/>
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/back_64px"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="返回"
+                    android:textSize="16sp"
+                    android:textColor="@drawable/textcolor_white2gray"/>
+            </LinearLayout >
             <com.example.mrh.musicplayer.custom.MarqueeTextView
                 android:id="@+id/tv_songslist_fragmentname"
                 android:layout_weight="1"
@@ -144,10 +155,11 @@
                 android:layout_height="match_parent"
                 >
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/download_64px"/>
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/delete_64px"/>
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="删除"
@@ -164,10 +176,11 @@
                 android:layout_height="match_parent"
                 >
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/download_64px"/>
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/send_48px"/>
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="添加到"
