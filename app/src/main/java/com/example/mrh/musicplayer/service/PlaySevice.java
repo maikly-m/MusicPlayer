@@ -144,7 +144,7 @@ public class PlaySevice extends Service {
                 songs_all.put(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs);
                 list_custom = sqlHelper.getList(Constant.CUSTOM_LIST, null, null);
                 //自定义列表获取数据
-                if (list_custom.size() != 0 && mAllSongs.size() != 0){
+                if (list_custom.size() != 0){
                     for (MusicList m : list_custom){
                         ArrayList<MusicInfo> transfer = new ArrayList<>();
                         ArrayList<MusicInfo> musicInfo = sqlHelper.getMusicInfo(m.getListName(),
@@ -164,7 +164,7 @@ public class PlaySevice extends Service {
                             songs_custom.put(m.getListName(), transfer);
                         }
                     }
-                } else if (list_custom == null){
+                } else {
                     //创建最爱列表
                     sqlHelper.CreatePlayTable(CUSTOM_LIST);
                     ContentValues cv = new ContentValues();
@@ -173,6 +173,10 @@ public class PlaySevice extends Service {
                     sqlHelper.setList(CUSTOM_LIST, cv);
                     sqlHelper.CreateMusicTable(Constant.MUSIC_LIST_CUSTOM_ + Constant
                             .CUSTOM_LIST_LOVE);
+                    MusicList m = new MusicList();
+                    m.setListName(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                            .CUSTOM_LIST_LOVE);
+                    list_custom.add(m);
                 }
                 //关闭数据库
                 sqlHelper.closeDb();

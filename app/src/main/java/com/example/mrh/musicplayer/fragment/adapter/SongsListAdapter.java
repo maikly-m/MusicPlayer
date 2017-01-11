@@ -2,11 +2,9 @@ package com.example.mrh.musicplayer.fragment.adapter;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -15,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,10 +25,11 @@ import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.domain.MusicList;
 import com.example.mrh.musicplayer.fragment.AllMusicFragment;
 import com.example.mrh.musicplayer.fragment.AllMusicVPFragment;
-import com.example.mrh.musicplayer.fragment.SongsListFragment;
 import com.example.mrh.musicplayer.fragment.MusicListFragment;
+import com.example.mrh.musicplayer.fragment.SongsListFragment;
 import com.example.mrh.musicplayer.fragment.viewHolder.SongsListViewHolder;
 import com.example.mrh.musicplayer.service.PlaySevice;
+import com.example.mrh.musicplayer.utils.DebugUtils;
 import com.example.mrh.musicplayer.utils.Utils;
 
 import java.util.ArrayList;
@@ -69,6 +69,15 @@ public class SongsListAdapter extends BaseAdapter {
     private AlertDialog mDeleteDialog;
     private boolean isSureDelete = false;
     private AlertDialog mDetailDialog;
+    private int height;
+    private int[] mP1;
+    private RelativeLayout mRlSongslist;
+    private ListView mLvSongslistList;
+    private int mH;
+    /**
+     * 显示最后一个条目时，需要上滑
+     */
+    private boolean isLastShow = false;
 
     public SongsListAdapter (Context context, Fragment f, List<MusicInfo> list, String listName,
                              String songsName) {
@@ -85,20 +94,22 @@ public class SongsListAdapter extends BaseAdapter {
      * 设置conditionMap
      */
     public void setConditionMap () {
-        for (int i = 0; i < list.size(); i++){
-            if (list.get(i).getTITLE().equals(songsName) &&
-                    listName.equals(((MainActivity) context).mPlayer.mMusicListname)){
-                //初始化
-                if (((MainActivity) context).mPlayer.mMediaPlayer.isPlaying()){
-                    conditionMap.put(i, CONDITION_SONGSLIST_1);
+        if (list != null){
+            for (int i = 0; i < list.size(); i++){
+                if (list.get(i).getTITLE().equals(songsName) &&
+                        listName.equals(((MainActivity) context).mPlayer.mMusicListname)){
+                    //初始化
+                    if (((MainActivity) context).mPlayer.mMediaPlayer.isPlaying()){
+                        conditionMap.put(i, CONDITION_SONGSLIST_1);
+                    } else{
+                        conditionMap.put(i, CONDITION_SONGSLIST_2);
+                    }
+                    ((SongsListFragment) f).prePosition = i;
                 } else{
-                    conditionMap.put(i, CONDITION_SONGSLIST_2);
+                    conditionMap.put(i, CONDITION_SONGSLIST_0);
                 }
-                ((SongsListFragment) f).prePosition = i;
-            } else{
-                conditionMap.put(i, CONDITION_SONGSLIST_0);
+                cvs.put(i, IS_HIDE_ANIMATION);
             }
-            cvs.put(i, IS_HIDE_ANIMATION);
         }
     }
 
@@ -126,14 +137,15 @@ public class SongsListAdapter extends BaseAdapter {
             //初始化容器
             initView(songsListViewHolder);
             cvList.add(songsListViewHolder);
-//            DebugUtils.log_d(TAG, position + "  convertView++songsListViewHolder++ " +
-//                    ""+songsListViewHolder);
         } else{
             songsListViewHolder = (SongsListViewHolder) convertView.getTag();
         }
 //        处理动画时getview问题,防止内存泄漏
         if (mIsStopUpdateLayout){
-            return songsListViewHolder.rootView;
+            if (!isLastShow){
+                return songsListViewHolder.rootView;
+            }
+            isLastShow = false;
         }
         //加入position
         songsListViewHolder.mIvListsplayMore.setMyPosition(position);
@@ -141,6 +153,9 @@ public class SongsListAdapter extends BaseAdapter {
         songsListViewHolder.mTvListsplayTitle.setText(list.get(position).getTITLE());
         songsListViewHolder.mTvListsplaySinger.setText(list.get(position).getARTIST());
         songsListViewHolder.mTvListsplayOrder.setText(String.valueOf(position + 1));
+        if (listName.equals(Constant.MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE)){
+            songsListViewHolder.mLlListsplayDelete.setVisibility(View.GONE);
+        }
 
         //根据不同的状态恢复
         switch (conditionMap.get(position)){
@@ -190,17 +205,8 @@ public class SongsListAdapter extends BaseAdapter {
             break;
         }
 
-        RelativeLayout rootView = (RelativeLayout) songsListViewHolder.rootView;
-        rootView.removeAllViews();
-        RelativeLayout.LayoutParams lp_lllistsplayview =
-                (RelativeLayout.LayoutParams) songsListViewHolder.mLlListsplayView
-                        .getLayoutParams();
-        lp_lllistsplayview.addRule(RelativeLayout.BELOW, R.id.ll_listsplay_);
-        RelativeLayout.LayoutParams lp_lllistsplay = (RelativeLayout.LayoutParams)
-                songsListViewHolder.mLlListsplay
-                        .getLayoutParams();
-        lp_lllistsplay.addRule(RelativeLayout.BELOW);
-
+        ViewGroup.LayoutParams lp_lllistsplayview = songsListViewHolder.mLlListsplayView
+                .getLayoutParams();
         switch (cvs.get(position)){
         case IS_HIDE_ANIMATION:
             lp_lllistsplayview.height = 0;
@@ -211,8 +217,7 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mLlListsplay.setBackgroundColor(Color.GRAY);
             break;
         }
-        rootView.addView(songsListViewHolder.mLlListsplay, lp_lllistsplay);
-        rootView.addView(songsListViewHolder.mLlListsplayView, lp_lllistsplayview);
+        songsListViewHolder.mLlListsplayView.setLayoutParams(lp_lllistsplayview);
 
         return songsListViewHolder.rootView;
     }
@@ -271,14 +276,18 @@ public class SongsListAdapter extends BaseAdapter {
         ArrayList<MusicInfo> musicInfos = ((MainActivity) context).songs_love.get(Constant
                 .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
         boolean isHave = false;
-        if (musicInfos != null){
+        if (musicInfos != null && musicInfos.size() != 0){
             for (int i = 0; i < musicInfos.size(); i++){
                 if (this.list.get(position).getDATA().equals(musicInfos.get(i).getDATA())){
                     isHave = true;
-
                     Utils.deleteMusicInfo(context, Constant
                             .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE, "TITLE = " +
                             "?", new String[]{musicInfos.get(i).getTITLE()});
+                    PlaySevice player = ((MainActivity) context).mPlayer;
+                    if (list.get(position).getTITLE().equals(player.mMusicSongsname)){
+                        ((MainActivity) context).mPlayer.resetPlayMusic();
+                        player.mMusicSongsname = null;
+                    }
                     musicInfos.remove(i);
                     break;
                 }
@@ -302,6 +311,7 @@ public class SongsListAdapter extends BaseAdapter {
             contentValues.put("IMAGE", list.get(position).getIMAGE());
             contentValues.put("LYRIC", list.get(position).getLYRIC());
             lcv.add(contentValues);
+
             Utils.setMusicInfo(context, Constant
                     .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE, lcv);
             if (musicInfos == null){
@@ -313,8 +323,14 @@ public class SongsListAdapter extends BaseAdapter {
                 musicList.setListName(Constant
                         .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
                 ((MainActivity) context).list_custom.add(musicList);
+            }else {
+                musicInfos.add(list.get(position));
             }
             cv.mIvListsplayLove.setBackgroundResource(R.drawable.love_48px_pressed);
+        }
+        closeView(cv);
+        if (listName.equals(Constant.MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE)){
+            ((SongsListFragment)f).initData2();
         }
     }
 
@@ -447,34 +463,24 @@ public class SongsListAdapter extends BaseAdapter {
      * @param cv
      */
     private void showView (final SongsListViewHolder cv) {
-//        DebugUtils.log_d(TAG, "showview++ "+cv);
         if (mHeight != 0){
-            Point point = new Point();
-            ((Activity) context).getWindowManager().getDefaultDisplay().getSize(point);
-            int y = point.y;
             int[] p = new int[2];
-            cv.mLlListsplayView.getLocationOnScreen(p);
-            int top = p[1];
+            cv.mVListsplayPlay.getLocationOnScreen(p);
+            int y = p[1];
 
-            final RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) cv.mLlListsplayView.getLayoutParams();
-            layoutParams.height = 0;
-            RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) cv.mLlListsplay
-                    .getLayoutParams();
-            //重置显示动画的布局
-            RelativeLayout rootView = (RelativeLayout) cv.rootView;
-            rootView.removeAllViews();
-            if (top > y * 0.6){
-                lp.addRule(RelativeLayout.BELOW, R.id.ll_listsplay_view);
-                layoutParams.addRule(RelativeLayout.BELOW);
-                rootView.addView(cv.mLlListsplayView, layoutParams);
-                rootView.addView(cv.mLlListsplay, lp);
+            if (mRlSongslist == null){
+                height = Utils.dip2px(context, 100);
+                mP1 = new int[2];
+                mRlSongslist = ((SongsListFragment) f).RlSongslist;
+                mLvSongslistList = ((SongsListFragment) f).mLvSongslistList;
+                mRlSongslist.getLocationOnScreen(mP1);
+                mH = mLvSongslistList.getHeight() - height;
+            }
 
-            } else{
-                lp.addRule(RelativeLayout.BELOW);
-                layoutParams.addRule(RelativeLayout.BELOW, R.id.ll_listsplay_);
-                rootView.addView(cv.mLlListsplayView, layoutParams);
-                rootView.addView(cv.mLlListsplay, lp);
+            if (y + height > mRlSongslist.getHeight()+ mP1[1]){
+                DebugUtils.log_d(TAG, "ssaa");
+                isLastShow = true;
+                mLvSongslistList.setSelectionFromTop(position, mH);
             }
             ArrayList<MusicInfo> musicInfos = ((MainActivity) context).songs_love.get(Constant
                     .MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
@@ -492,6 +498,8 @@ public class SongsListAdapter extends BaseAdapter {
             } else{
                 cv.mIvListsplayLove.setBackgroundResource(R.drawable.love_48px_normal);
             }
+            final ViewGroup.LayoutParams layoutParams = cv.mLlListsplayView.getLayoutParams();
+            layoutParams.height = 0;
             ValueAnimator va = ValueAnimator.ofInt(0, mHeight);
             va.setDuration(50);
             //获取显示的view位置
@@ -522,8 +530,7 @@ public class SongsListAdapter extends BaseAdapter {
             ValueAnimator va = ValueAnimator.ofInt(mHeight, 0);
             va.setDuration(50);
             //获取显示的view位置
-            final RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) cv.mLlListsplayView.getLayoutParams();
+            final ViewGroup.LayoutParams layoutParams = cv.mLlListsplayView.getLayoutParams();
             va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate (ValueAnimator animation) {
@@ -550,12 +557,9 @@ public class SongsListAdapter extends BaseAdapter {
             for (SongsListViewHolder cv : cvList){
                 if (cv.mLlListsplayView.getHeight() == mHeight){
                     mCv = cv;
-                    final RelativeLayout.LayoutParams layoutParams =
-                            (RelativeLayout.LayoutParams) mCv.mLlListsplayView.getLayoutParams();
+                    final ViewGroup.LayoutParams layoutParams = mCv.mLlListsplayView.getLayoutParams();
                     ValueAnimator va = ValueAnimator.ofInt(mHeight, 0);
                     va.setDuration(50);
-//                    DebugUtils.log_d(TAG, "closeView+++"+mCv+" h "+mCv
-//                            .mLlListsplayView.getHeight());
                     va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                         @Override
                         public void onAnimationUpdate (ValueAnimator animation) {
@@ -573,7 +577,6 @@ public class SongsListAdapter extends BaseAdapter {
                     break;
                 }
             }
-//            DebugUtils.log_d(TAG, "closeView+++000000000000");
         }
     }
 

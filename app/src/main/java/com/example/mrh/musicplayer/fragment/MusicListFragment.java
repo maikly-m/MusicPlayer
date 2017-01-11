@@ -90,23 +90,15 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
 
     private void initData () {
         list = activity.list_custom;
-        final List<MusicList> musicLists = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++){
-            if (list.get(i).getListName().equals(Constant.MUSIC_LIST_CUSTOM_ + Constant
-                    .CUSTOM_LIST_LOVE)){
-                continue;
-            }
-            musicLists.add(list.get(i));
-        }
         songs = activity.songs_custom;
-        mTvListNum.setText("歌单("+musicLists.size()+")");
-        mAdapter = new MusicListAdapter(context, this, musicLists);
+        mTvListNum.setText("歌单("+(list.size()-1)+")");
+        mAdapter = new MusicListAdapter(context, this, list);
         mLvMusiclist.setAdapter(mAdapter);
         mLvMusiclist.setDividerHeight(0);
         mLvMusiclist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                selectFragment(musicLists.get(position).getListName());
+                selectFragment(list.get(position+1).getListName());
             }
         });
     }
@@ -187,7 +179,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         list.add(musicList);
         activity.songs_custom.put(name, new ArrayList<MusicInfo>());
         mAdapter.notifyDataSetChanged();
-        mTvListNum.setText("歌单("+list.size()+")");
+        mTvListNum.setText("歌单("+(list.size()-1)+")");
     }
 
     private void openDataBase (String name) {
@@ -199,6 +191,10 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
             Utils.setList(context, CUSTOM_LIST, cv);
             SqlHelper.CreateMusicTable(context, Constant.MUSIC_LIST_CUSTOM_ + Constant
                     .CUSTOM_LIST_LOVE);
+            MusicList m = new MusicList();
+            m.setListName(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                    .CUSTOM_LIST_LOVE);
+            list.add(m);
         }
         ContentValues cv = new ContentValues();
         cv.put("listName", name);

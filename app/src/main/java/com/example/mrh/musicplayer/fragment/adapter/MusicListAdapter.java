@@ -40,7 +40,7 @@ public class MusicListAdapter extends BaseAdapter {
 
     @Override
     public int getCount () {
-        return list.size();
+        return list.size() - 1;
     }
 
     @Override
@@ -62,20 +62,19 @@ public class MusicListAdapter extends BaseAdapter {
         } else{
             musicListViewHolder = (MusicListViewHolder) convertView.getTag();
         }
-        String listName = list.get(position).getListName();
+        String listName = list.get(position+1).getListName();
         musicListViewHolder.mTvMusiclist.setText(listName.substring(Constant.MUSIC_LIST_CUSTOM_
                 .length()));
         if (((MusicListFragment)f).songs.size() != 0){
             musicListViewHolder.mTvMusicCount.setText(((MusicListFragment)f).songs
-                    .get(list.get(position).getListName()).size() + " 首");
+                    .get(list.get(position+1).getListName()).size() + " 首");
         }else {
             musicListViewHolder.mTvMusicCount.setText("0 首");
         }
         musicListViewHolder.mIvMusiclistDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick (View v) {
-                showDialog(position);
-
+                showDialog(position+1);
             }
         });
         return musicListViewHolder.rootView;
@@ -111,7 +110,7 @@ public class MusicListAdapter extends BaseAdapter {
                 }
                 list.remove(position);
                 notifyDataSetChanged();
-                ((MusicListFragment)f).mTvListNum.setText("歌单("+list.size()+")");
+                ((MusicListFragment)f).mTvListNum.setText("歌单("+(list.size()-1)+")");
                 mDialog.dismiss();
             }
         });

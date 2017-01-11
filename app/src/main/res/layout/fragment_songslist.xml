@@ -131,13 +131,24 @@
                     android:text="返回"/>
             </RelativeLayout >
         </RelativeLayout >
-        <ListView
+        <RelativeLayout
             android:layout_weight="1"
-            android:id="@+id/lv_songslist_list"
             android:layout_width="match_parent"
             android:layout_height="0dp" >
+            <ListView
+                android:id="@+id/lv_songslist_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
 
-        </ListView >
+            </ListView >
+            <TextView
+                android:visibility="gone"
+                android:layout_centerInParent="true"
+                android:id="@+id/tv_songlist_null"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="还没有歌曲"/>
+        </RelativeLayout >
         <LinearLayout
             android:id="@+id/ll_songslist_bottom"
             android:orientation="horizontal"

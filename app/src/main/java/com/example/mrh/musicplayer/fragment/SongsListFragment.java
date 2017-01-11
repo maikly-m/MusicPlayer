@@ -65,7 +65,8 @@ import static com.example.mrh.musicplayer.fragment.adapter.SongsListAdapter.COND
 public class SongsListFragment extends BaseFragment implements View.OnClickListener {
     private static final String TAG = "SongsListFragment";
     private View mRootView;
-    private ListView mLvSongslistList;
+    public ListView mLvSongslistList;
+    private TextView mTvSonglistNull;
     private List<MusicInfo> list;
     private SongsListAdapter mAdapter;
     public int prePosition = -1;
@@ -106,7 +107,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
     private TextView mTvSongslistFragmentname;
     private ImageView mIvSongslistAdd;
     public String fragmentPrefix;
-    private RelativeLayout RlSongslist;
+    public RelativeLayout RlSongslist;
     private int mX; //动画初始位置x
     private int mY; //动画初始位置y
     private boolean hasStatusBarHeight = false;
@@ -176,6 +177,14 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                     return true;
                 }
             }, fragmentName);
+        }else if (fm.findFragmentByTag("ContentFragment") != null){
+            activity.setOnFragmentBack(new BaseActivity.FragmentBack() {
+                @Override
+                public boolean execute (KeyEvent event) {
+                    showAndRemoveFragment("ContentFragment", fragmentName);
+                    return true;
+                }
+            }, fragmentName);
         }
 
         this.RlSongslist = (RelativeLayout) mRootView.findViewById(R.id.rl_songslist); //最大的父容器
@@ -201,6 +210,7 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                 .rl_songslist_select);
         this.mRlSongslist = (RelativeLayout) mRootView.findViewById(R.id.rl_songslist_);
         this.mLvSongslistList = (ListView) mRootView.findViewById(R.id.lv_songslist_list);
+        this.mTvSonglistNull = (TextView) mRootView.findViewById(R.id.tv_songlist_null);
         this.mLlSongslistDelete = (LinearLayout) mRootView.findViewById(R.id
                 .ll_songslist_delete);
         this.mLlSongslistSendto = (LinearLayout) mRootView.findViewById(R.id
@@ -243,6 +253,8 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                 showAndRemoveFragment("MusicListFragment", fragmentName);
             }else if (fm.findFragmentByTag("AllMusicFragment") != null){
                 showAndRemoveFragment("AllMusicFragment", fragmentName);
+            }else if (fm.findFragmentByTag("ContentFragment") != null){
+                showAndRemoveFragment("ContentFragment", fragmentName);
             }
             break;
         case R.id.iv_songslist_add:
@@ -695,8 +707,14 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
             this.mLlSongslist.setVisibility(View.GONE);
             list = activity.songs_all.get(fragmentName);
         } else if (fragmentName.contains(Constant.MUSIC_LIST_CUSTOM_)){
+            if (fragmentName.equals(Constant.MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE)){
+                list = activity.songs_love.get(fragmentName);
+                this.mLlSongslistDelete.setVisibility(View.GONE);
+                this.mIvSongslistAdd.setVisibility(View.INVISIBLE);
+            } else{
+                list = activity.songs_custom.get(fragmentName);
+            }
             this.fragmentPrefix = Constant.MUSIC_LIST_CUSTOM_;
-            list = activity.songs_custom.get(fragmentName);
             String substring = fragmentName.substring(Constant.MUSIC_LIST_CUSTOM_.length());
             mTvSongslistFragmentname.setText(substring);
         } else if (fragmentName.contains(Constant.MUSIC_LIST_ARTIST_)){
@@ -721,131 +739,139 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
         initData2();
     }
 
-    private void initData2 () {
-        mAdapter = new SongsListAdapter(context, this, list, fragmentName, player.mMusicSongsname);
-        mConditionMap = mAdapter.conditionMap;
-        mShouldRevomeView = mAdapter.shouldRevomeView;
-        mLvSongslistList.setAdapter(mAdapter);
-        if (prePosition != -1){
-            mLvSongslistList.setSelectionFromTop(prePosition, Utils.dip2px(context, 200));
-        }
-        mLvSongslistList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                //保存数据
-                SongsListViewHolder holder = (SongsListViewHolder) view.getTag();
-                int[] location = new int[2];
-                holder.mTvListsplayIcon.getLocationInWindow(location);
-                mX = location[0];
-                mY = location[1];
-                if (!isSelectting){
-                    //位置不同时
-                    if (prePosition == -1){
-                        holder.mVListsplayPlay.setVisibility(View.VISIBLE);
-                        mConditionMap.put(position, CONDITION_SONGSLIST_1);
-                        holder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
+    public void initData2 () {
+        if (list == null || list.size() == 0 ){
+            mTvSonglistNull.setVisibility(View.VISIBLE);
+            mLvSongslistList.setVisibility(View.GONE);
+        } else{
+            mTvSonglistNull.setVisibility(View.GONE);
+            mLvSongslistList.setVisibility(View.VISIBLE);
+            mAdapter = new SongsListAdapter(context, this, list, fragmentName, player.mMusicSongsname);
+            mConditionMap = mAdapter.conditionMap;
+            mShouldRevomeView = mAdapter.shouldRevomeView;
+            mLvSongslistList.setAdapter(mAdapter);
+            if (prePosition != -1){
+                mLvSongslistList.setSelectionFromTop(prePosition, Utils.dip2px(context, 200));
+            }
+            mLvSongslistList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                    //保存数据
+                    SongsListViewHolder holder = (SongsListViewHolder) view.getTag();
+                    int[] location = new int[2];
+                    holder.mTvListsplayIcon.getLocationOnScreen(location);
+                    mX = location[0];
+                    mY = location[1];
 
-                        //播放或暂停音乐
-                        initPlayMusic(position);
+                    if (!isSelectting){
+                        //位置不同时
+                        if (prePosition == -1){
+                            holder.mVListsplayPlay.setVisibility(View.VISIBLE);
+                            mConditionMap.put(position, CONDITION_SONGSLIST_1);
+                            holder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
 
-                        prePosition = position;
-                        mView = view;
-                    } else if (prePosition != position){
-                        if (isShouldRevomeView){
-                            //滑动条目滚出屏幕后滚回时
-                            isShouldRevomeView = false;
-                            View v = (View) mShouldRevomeView.get("shouldRemoveView");
-                            int p = (int) mShouldRevomeView.get("position");
-                            SongsListViewHolder _holder = (SongsListViewHolder) v.getTag();
-                            _holder.mVListsplayPlay.setVisibility(View.INVISIBLE);
-                            _holder.rootView.setBackgroundColor(Color.argb(0, 0, 0, 0));
-                            mConditionMap.put(p, CONDITION_SONGSLIST_0);
+                            //播放或暂停音乐
+                            initPlayMusic(position);
 
+                            prePosition = position;
+                            mView = view;
+                        } else if (prePosition != position){
+                            if (isShouldRevomeView){
+                                //滑动条目滚出屏幕后滚回时
+                                isShouldRevomeView = false;
+                                View v = (View) mShouldRevomeView.get("shouldRemoveView");
+                                int p = (int) mShouldRevomeView.get("position");
+                                SongsListViewHolder _holder = (SongsListViewHolder) v.getTag();
+                                _holder.mVListsplayPlay.setVisibility(View.INVISIBLE);
+                                _holder.rootView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+                                mConditionMap.put(p, CONDITION_SONGSLIST_0);
+
+                            } else{
+                                SongsListViewHolder mholder = (SongsListViewHolder) mView.getTag();
+                                mholder.mVListsplayPlay.setVisibility(View.INVISIBLE);
+                                mholder.rootView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+                                mConditionMap.put(prePosition, CONDITION_SONGSLIST_0);
+                            }
+
+                            holder.mVListsplayPlay.setVisibility(View.VISIBLE);
+                            holder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
+                            mConditionMap.put(position, CONDITION_SONGSLIST_1);
+
+                            //播放或暂停音乐
+                            initPlayMusic(position);
+
+                            prePosition = position;
+                            mView = view;
                         } else{
-                            SongsListViewHolder mholder = (SongsListViewHolder) mView.getTag();
-                            mholder.mVListsplayPlay.setVisibility(View.INVISIBLE);
-                            mholder.rootView.setBackgroundColor(Color.argb(0, 0, 0, 0));
-                            mConditionMap.put(prePosition, CONDITION_SONGSLIST_0);
+                            //根据不同的状态设置
+                            switch (mConditionMap.get(position)){
+                            case CONDITION_SONGSLIST_0:
+                                break;
+                            case CONDITION_SONGSLIST_1:
+                                holder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
+                                mConditionMap.put(position, CONDITION_SONGSLIST_2);
+                                break;
+                            case CONDITION_SONGSLIST_2:
+                                holder.rootView.setBackgroundColor(Color.argb(55, 55, 55, 55));
+                                mConditionMap.put(position, CONDITION_SONGSLIST_1);
+                                break;
+                            case CONDITION_SONGSLIST_3:
+                                break;
+                            case CONDITION_SONGSLIST_4:
+                                break;
+                            default:
+                                break;
+                            }
+                            //播放或暂停音乐
+                            initPlayMusic(position);
                         }
-
-                        holder.mVListsplayPlay.setVisibility(View.VISIBLE);
-                        holder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
-                        mConditionMap.put(position, CONDITION_SONGSLIST_1);
-
-                        //播放或暂停音乐
-                        initPlayMusic(position);
-
-                        prePosition = position;
-                        mView = view;
                     } else{
-                        //根据不同的状态设置
+                        //选择条目
                         switch (mConditionMap.get(position)){
                         case CONDITION_SONGSLIST_0:
                             break;
                         case CONDITION_SONGSLIST_1:
-                            holder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
-                            mConditionMap.put(position, CONDITION_SONGSLIST_2);
                             break;
                         case CONDITION_SONGSLIST_2:
-                            holder.rootView.setBackgroundColor(Color.argb(55, 55, 55, 55));
-                            mConditionMap.put(position, CONDITION_SONGSLIST_1);
                             break;
                         case CONDITION_SONGSLIST_3:
+                            holder.mIvListsplaySelect.setBackgroundResource(R.drawable
+                                    .btn_check_on_holo_light);
+                            mConditionMap.put(position, CONDITION_SONGSLIST_4);
                             break;
                         case CONDITION_SONGSLIST_4:
+                            holder.mIvListsplaySelect.setBackgroundResource(R.drawable
+                                    .btn_check_off_holo_light);
+                            mConditionMap.put(position, CONDITION_SONGSLIST_3);
                             break;
                         default:
                             break;
                         }
-                        //播放或暂停音乐
-                        initPlayMusic(position);
-                    }
-                } else{
-                    //选择条目
-                    switch (mConditionMap.get(position)){
-                    case CONDITION_SONGSLIST_0:
-                        break;
-                    case CONDITION_SONGSLIST_1:
-                        break;
-                    case CONDITION_SONGSLIST_2:
-                        break;
-                    case CONDITION_SONGSLIST_3:
-                        holder.mIvListsplaySelect.setBackgroundResource(R.drawable
-                                .btn_check_on_holo_light);
-                        mConditionMap.put(position, CONDITION_SONGSLIST_4);
-                        break;
-                    case CONDITION_SONGSLIST_4:
-                        holder.mIvListsplaySelect.setBackgroundResource(R.drawable
-                                .btn_check_off_holo_light);
-                        mConditionMap.put(position, CONDITION_SONGSLIST_3);
-                        break;
-                    default:
-                        break;
-                    }
-                    showSelectNum();
-                }
-            }
-        });
-
-
-        mLvSongslistList.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged (AbsListView view, int scrollState) {
-
-            }
-
-            //滚出滚入记录
-            @Override
-            public void onScroll (AbsListView view, int firstVisibleItem,
-                                  int visibleItemCount, int totalItemCount) {
-                if (!isSelectting && prePosition != -1 && !isShouldRevomeView){
-                    if (prePosition < firstVisibleItem || prePosition >
-                            firstVisibleItem + visibleItemCount){
-                        isShouldRevomeView = true;
+                        showSelectNum();
                     }
                 }
-            }
-        });
+            });
+
+
+            mLvSongslistList.setOnScrollListener(new AbsListView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged (AbsListView view, int scrollState) {
+
+                }
+
+                //滚出滚入记录
+                @Override
+                public void onScroll (AbsListView view, int firstVisibleItem,
+                                      int visibleItemCount, int totalItemCount) {
+                    if (!isSelectting && prePosition != -1 && !isShouldRevomeView){
+                        if (prePosition < firstVisibleItem || prePosition >
+                                firstVisibleItem + visibleItemCount){
+                            isShouldRevomeView = true;
+                        }
+                    }
+                }
+            });
+        }
     }
 
     //开始播放音乐或者暂停

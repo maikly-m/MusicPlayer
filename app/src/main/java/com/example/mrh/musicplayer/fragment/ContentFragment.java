@@ -22,6 +22,7 @@ import java.util.List;
  */
 
 public class ContentFragment extends BaseFragment implements View.OnClickListener {
+    private static final String TAG = "ContentFragment";
 
     private View mRootView;
     private TabPageIndicator mIndicator;

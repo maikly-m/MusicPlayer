@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.mrh.musicplayer.R;
+import com.example.mrh.musicplayer.constant.Constant;
 
 /**
  * Created by MR.H on 2016/12/3 0003.
@@ -54,7 +55,9 @@ public class MusicFragment extends BaseFragment implements View.OnClickListener 
     public void onClick (View v) {
         switch (v.getId()){
         case R.id.ll_like:
-            addFragment(R.id.fl_main, new MyLoveFragment(), "MyLoveFragment");
+            addFragment(R.id.fl_main, SongsListFragment.newInstance(Constant.MUSIC_LIST_CUSTOM_ +
+            Constant.CUSTOM_LIST_LOVE),
+                    Constant.MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LOVE);
             break;
         case R.id.ll_music:
             addFragment(R.id.fl_main, new MusicListFragment(), "MusicListFragment");
