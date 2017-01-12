@@ -108,6 +108,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private long mCurrentPlayTime;
     public HashMap<String, ArrayList<MusicInfo>> songs_all;
     public HashMap<String, ArrayList<MusicInfo>> songs_love;
+    public HashMap<String, ArrayList<MusicInfo>> songs_lately;
     public HashMap<String, ArrayList<MusicInfo>> songs_artist;
     public HashMap<String, ArrayList<MusicInfo>> songs_album;
     public HashMap<String, ArrayList<MusicInfo>> songs_data;
@@ -192,6 +193,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         list_data = mPlayer.list_data;
         songs_all = mPlayer.songs_all;
         songs_love = mPlayer.songs_love;
+        songs_lately = mPlayer.songs_lately;
         songs_custom = mPlayer.songs_custom;
         songs_artist = mPlayer.songs_artist;
         songs_album = mPlayer.songs_album;

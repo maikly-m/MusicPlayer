@@ -711,7 +711,11 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                 list = activity.songs_love.get(fragmentName);
                 this.mLlSongslistDelete.setVisibility(View.GONE);
                 this.mIvSongslistAdd.setVisibility(View.INVISIBLE);
-            } else{
+            } else if (fragmentName.equals(Constant.MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LATELY)){
+                list = activity.songs_lately.get(fragmentName);
+                this.mLlSongslistDelete.setVisibility(View.GONE);
+                this.mIvSongslistAdd.setVisibility(View.INVISIBLE);
+            }else{
                 list = activity.songs_custom.get(fragmentName);
             }
             this.fragmentPrefix = Constant.MUSIC_LIST_CUSTOM_;
@@ -994,7 +998,8 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
      */
     @Subscribe(threadMode = ThreadMode.MAIN)       //主线程标识
     public void onEventMainThread (String flag) {
-        if (flag.equals(Constant.UPDATE_FRAGMENT_MODEL)){
+        switch (flag){
+        case Constant.UPDATE_FRAGMENT_MODEL:
             switch (activity.mPlayer.mMediaPlayer.getPlayList().getPlayModel()){
             case Constant.PLAYMODEL_ORDER:
                 mIvSongslistPlaymodel.setBackgroundResource(R
@@ -1012,9 +1017,13 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                 mTvSongslistPlaymodel.setText(Constant.PLAYMODEL_CYCLE);
                 break;
             }
-        }
-        if (flag.equals(Constant.UPDATE_FRAGMENT_LIST)){
+            break;
+        case Constant.UPDATE_FRAGMENT_LIST:
             initData2();
+            break;
+        case Constant.UPDATE_PLAY_LATELY:
+
+            break;
         }
     }
 }

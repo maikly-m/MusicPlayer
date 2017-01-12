@@ -8,6 +8,7 @@ public class Constant {
     public static final String SYSTEM_MUSIC_LIST_NAME = "musicPlayer";
     public static final String CUSTOM_LIST = "list_custom";
     public static final String CUSTOM_LIST_LOVE = "最爱";
+    public static final String CUSTOM_LIST_LATELY = "最近";
     //mainActivty
     public static final String OK_DATA = "ok_data"; //初始化加载数据完毕
     public static final String OK_INITSERVICE = "ok_initservice"; //初始化服务
@@ -22,10 +23,11 @@ public class Constant {
     public static final String UPDATE_INIT = "update_init"; //初始化数据
     public static final String UPDATE_PREGRESS = "update_pregress"; //更新进度
     public static final String UPDATE_PLAY_RESET = "update_play_reset"; //清空播放,比如播放时删除了歌曲
+    public static final String UPDATE_PLAY_LATELY = "update_play_lately"; //通知 最近 列表更新
     //playActivity
     public static final String PLAYACTIVITY_INITSERVICE =
             "playactivity_initservice";//playactivityl连接上服务
-    public static final String PLAYMODEL_ORDER = "顺序播放";
+    public static final String PLAYMODEL_ORDER = "单曲播放";
     public static final String PLAYMODEL_RANDOM = "随机播放";
     public static final String PLAYMODEL_CYCLE = "循环播放";
 
@@ -49,6 +51,10 @@ public class Constant {
     public static final String MUSIC_EFFECT_EQULIZER_05 = "music_effect_equlizer_05";
     public static final String MUSIC_EFFECT_BASSBOOST = "music_effect_bassboost";
     public static final String MUSIC_EFFECT_PRESETREVERB = "music_effect_presetreverb";
+        //最近播放
+    public static final String MUSIC_PLAY_LATELY = "music_play_lately";
+    public static final int MUSIC_PLAY_LATELY_SPACE = 100;
+    public static final int MUSIC_PLAY_LATELY_COUNT = 5;
 
     //列表类型
     public static final String MUSIC_LIST_CUSTOM_ = "music_list_custom_";

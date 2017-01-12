@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST;
+import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST_LATELY;
 import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST_LOVE;
 
 /**
@@ -91,7 +92,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
     private void initData () {
         list = activity.list_custom;
         songs = activity.songs_custom;
-        mTvListNum.setText("歌单("+(list.size()-1)+")");
+        mTvListNum.setText("歌单("+(list.size()-2)+")");
         mAdapter = new MusicListAdapter(context, this, list);
         mLvMusiclist.setAdapter(mAdapter);
         mLvMusiclist.setDividerHeight(0);
@@ -167,7 +168,8 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         if (list != null){
             for (int i = 0; i < list.size(); i++){
                 if (list.get(i).getListName().equals(name) || list.get(i).getListName().equals
-                        (CUSTOM_LIST) || list.get(i).getListName().equals(CUSTOM_LIST_LOVE)){
+                        (CUSTOM_LIST) || list.get(i).getListName().equals(CUSTOM_LIST_LOVE)  
+                        || list.get(i).getListName().equals(CUSTOM_LIST_LATELY)){
                     Toast.makeText(context, "名字重复了，重新输入", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -179,7 +181,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         list.add(musicList);
         activity.songs_custom.put(name, new ArrayList<MusicInfo>());
         mAdapter.notifyDataSetChanged();
-        mTvListNum.setText("歌单("+(list.size()-1)+")");
+        mTvListNum.setText("歌单("+(list.size()-2)+")");
     }
 
     private void openDataBase (String name) {

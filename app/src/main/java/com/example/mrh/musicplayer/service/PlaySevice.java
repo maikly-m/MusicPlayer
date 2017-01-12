@@ -25,6 +25,7 @@ import com.example.mrh.musicplayer.constant.Constant;
 import com.example.mrh.musicplayer.custom.MyMediaPlayer;
 import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.domain.MusicList;
+import com.example.mrh.musicplayer.domain.MusicListLately;
 import com.example.mrh.musicplayer.domain.PlayList;
 import com.example.mrh.musicplayer.utils.DebugUtils;
 import com.example.mrh.musicplayer.utils.SqlHelper;
@@ -37,7 +38,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import static com.example.mrh.musicplayer.constant.Constant.CUSTOM_LIST;
@@ -69,6 +72,7 @@ public class PlaySevice extends Service {
     public HashMap<String, ArrayList<MusicInfo>> songs_all = new HashMap<>();
     public HashMap<String, ArrayList<MusicInfo>> songs_love = new HashMap<>();
     public HashMap<String, ArrayList<MusicInfo>> songs_custom = new HashMap<>();
+    public HashMap<String, ArrayList<MusicInfo>> songs_lately = new HashMap<>();
     public HashMap<String, ArrayList<MusicInfo>> songs_artist;
     public HashMap<String, ArrayList<MusicInfo>> songs_album;
     public HashMap<String, ArrayList<MusicInfo>> songs_data;
@@ -104,6 +108,10 @@ public class PlaySevice extends Service {
     public int mMusicEffectEqulizer05;
     public int mMusicEffectPresetreverb;
     public int mMusicEffectBassboost;
+    public List<MusicListLately> mList_lately;
+    public List<String> mList_sort;
+    public ArrayList<MusicInfo> mL;
+    private boolean isFullLately = false;
 
     @Nullable
     @Override
@@ -136,11 +144,37 @@ public class PlaySevice extends Service {
         new Thread() {
             @Override
             public void run () {
+                SharedPreferences sp = getSharedPreferences(Constant.MUSIC_PLAY_LATELY, Context.MODE_PRIVATE);
+                mList_lately = new LinkedList<>();
+                mList_sort = new LinkedList<>();
+                HashMap<String, String> map = new HashMap<>();
+                ArrayList<Long> sort = new ArrayList<>();
+                for (int i = 0; i < Constant.MUSIC_PLAY_LATELY_COUNT; i++){
+                    MusicListLately m = new MusicListLately();
+                    m.setName(sp.getString(String.valueOf(i), null));
+                    m.setOrder(sp.getLong(String.valueOf(i+Constant.MUSIC_PLAY_LATELY_SPACE), 0));
+                    mList_lately.add(m);
+                    String s = String.valueOf(sp.getLong(String.valueOf(i + Constant
+                            .MUSIC_PLAY_LATELY_SPACE), 0));
+                    if (!s.equals("0")){
+                        sort.add(sp.getLong(String.valueOf(i+Constant.MUSIC_PLAY_LATELY_SPACE), 0));
+                        map.put(s, sp.getString(String.valueOf(i), null));
+                    }
+                }
+                if (sort.size() != 0){
+                    if (sort.size() == Constant.MUSIC_PLAY_LATELY_COUNT){
+                        isFullLately = true;
+                    }
+                    Collections.sort(sort);
+                    for (int i = 0; i < sort.size(); i++){
+                        mList_sort.add(map.get(String.valueOf(sort.get(sort.size() - 1 - i))));
+                    }
+                }
+
                 SqlHelper sqlHelper = new SqlHelper(PlaySevice.this);
                 mAllSongs = Utils.getAllSongs();
                 list_allsongs.add(new MusicList(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs
-                        .size
-                        ()));
+                        .size()));
                 songs_all.put(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs);
                 list_custom = sqlHelper.getList(Constant.CUSTOM_LIST, null, null);
                 //自定义列表获取数据
@@ -180,6 +214,24 @@ public class PlaySevice extends Service {
                 }
                 //关闭数据库
                 sqlHelper.closeDb();
+
+                MusicList m = new MusicList();
+                m.setListName(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                        .CUSTOM_LIST_LATELY);
+                list_custom.add(1, m);
+                mL = new ArrayList<>();
+                if (mList_sort.size() != 0){
+                        for (int j = 0; j < mList_sort.size(); j++){
+                            for (int i = 0; i < mAllSongs.size(); i++){
+                                if (mAllSongs.get(i).getTITLE().equals(mList_sort.get(j))){
+                                    mL.add(mAllSongs.get(i));
+                                }
+                            }
+                        }
+                }
+                songs_lately.put(Constant.MUSIC_LIST_CUSTOM_ + Constant
+                        .CUSTOM_LIST_LATELY, mL);
+
                 //系统列表获取数据,每次开启服务就重建一次
                 if (mAllSongs.size() != 0){
                     HashMap<String, Object> hashMap1 = Utils.sortAndCreateList(mAllSongs, "artist");
@@ -318,7 +370,7 @@ public class PlaySevice extends Service {
         switch (mMediaPlayer.getPlayList().getPlayModel()){
         case Constant.PLAYMODEL_ORDER:
             if (mPosition >= 0 && mPosition < mList.size() - 1){
-                setSongPath(++mPosition);
+                setSongPath(mPosition);
                 MusicInfo musicInfo = mList.get(mPosition);
                 mMusicSongsname = musicInfo.getTITLE();
                 mMusicArtistname = musicInfo.getARTIST();
@@ -359,7 +411,7 @@ public class PlaySevice extends Service {
         switch (mMediaPlayer.getPlayList().getPlayModel()){
         case Constant.PLAYMODEL_ORDER:
             if (mPosition >= 0 && mPosition < mList.size() - 1){
-                setSongPath(--mPosition);
+                setSongPath(mPosition);
                 MusicInfo musicInfo = mList.get(mPosition);
                 mMusicSongsname = musicInfo.getTITLE();
                 mMusicArtistname = musicInfo.getARTIST();
@@ -434,6 +486,99 @@ public class PlaySevice extends Service {
             }
         });
         mPlayHandler.sendMessage(message);
+        setLatelySong(position);
+    }
+
+    /**
+     * 设置最近播放列表歌曲
+     * @param position
+     */
+    private void setLatelySong (int position) {
+        if (this.mMusicListname.equals(Constant.MUSIC_LIST_CUSTOM_ +
+            Constant.MUSIC_PLAY_LATELY)){
+            return;
+        }
+        String title = mList.get(position).getTITLE();
+        boolean isHave = false;
+        int p = 0;
+        SharedPreferences sp = getSharedPreferences(Constant.MUSIC_PLAY_LATELY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sp.edit();
+        long millis = System.currentTimeMillis() /100;
+        String s = String.valueOf(millis);
+        String substring = s.substring(s.length() - 9, s.length());
+        if (mL.size() >= Constant.MUSIC_PLAY_LATELY_COUNT){
+            isFullLately = true;
+        }
+        for (int i = 0; i < mL.size(); i++){
+            if (mL.get(i).getTITLE().equals(title)){
+                isHave = true;
+                p = i;
+                break;
+            }
+        }
+        if (!isHave){
+            if (isFullLately){
+                int location = 0;
+                long order = mList_lately.get(0).getOrder();
+                for (int i = 0; i < Constant.MUSIC_PLAY_LATELY_COUNT - 1; i++){
+                    if (order > mList_lately.get(i+1).getOrder()){
+                        location = i+1;
+                        order = mList_lately.get(i+1).getOrder();
+                    }
+
+                }
+                MusicListLately m = new MusicListLately();
+                m.setName(title);
+                m.setOrder(Long.parseLong(substring));
+                mList_lately.set(location, m);
+
+                mL.remove(mL.size()-1);
+                mL.add(0, mList.get(position));
+
+                edit.putString(String.valueOf(location), title);
+                edit.putLong(String.valueOf(location + Constant.MUSIC_PLAY_LATELY_SPACE), Long.parseLong
+                        (substring));
+            } else{
+                for (int i = 0; i < mAllSongs.size(); i++){
+                    if (mAllSongs.get(i).getDATA().equals(title)){
+                        mL.add(mAllSongs.get(i));
+                        break;
+                    }
+                }
+                for (int i = 0; i < Constant.MUSIC_PLAY_LATELY_COUNT; i++){
+                    if (mList_lately.get(i).getOrder() == 0){
+                        MusicListLately m = new MusicListLately();
+                        m.setName(title);
+                        m.setOrder(Long.parseLong(substring));
+                        mList_lately.set(i, m);
+
+                        mL.add(0, mList.get(position));
+
+                        edit.putString(String.valueOf(i), title);
+                        edit.putLong(String.valueOf(i + Constant.MUSIC_PLAY_LATELY_SPACE), Long
+                                .parseLong(substring));
+                        break;
+                    }
+                }
+            }
+        }else {
+            MusicInfo musicInfo = mL.get(p);
+            mL.remove(p);
+            mL.add(0, musicInfo);
+
+            for (int j = 0; j < Constant.MUSIC_PLAY_LATELY_COUNT; j++){
+                if (mList_lately.get(j).getName().equals(title)){
+                    mList_lately.get(j).setOrder(Long.parseLong(substring));
+                    break;
+                }
+            }
+
+            edit.putString(String.valueOf(p), title);
+            edit.putLong(String.valueOf(p + Constant.MUSIC_PLAY_LATELY_SPACE), Long.parseLong
+                    (substring));
+        }
+        edit.apply();
+        EventBus.getDefault().post(Constant.UPDATE_PLAY_LATELY);
     }
 
     /**
@@ -509,6 +654,7 @@ public class PlaySevice extends Service {
         });
         mMediaPlayer.isStart = true;
         this.mPosition = position;
+        setLatelySong(position);
     }
 
     /**
@@ -676,7 +822,8 @@ public class PlaySevice extends Service {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)       //主线程标识
     public void onEventMainThread (String flag) {
-        if (flag.equals(Constant.UPDATE_INIT)){
+        switch (flag){
+        case Constant.UPDATE_INIT:
             if (!mIsExist){
                 if (!mMusicListname.equals("")){
                     //存在列表
@@ -723,6 +870,7 @@ public class PlaySevice extends Service {
                 mainActivity.mTvMusicArtist.setText("");
             }
             mainActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);//可以控制音量
+            break;
         }
     }
 }

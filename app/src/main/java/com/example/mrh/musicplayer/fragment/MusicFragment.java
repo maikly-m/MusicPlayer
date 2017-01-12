@@ -66,7 +66,9 @@ public class MusicFragment extends BaseFragment implements View.OnClickListener 
 
             break;
         case R.id.ll_lately:
-
+            addFragment(R.id.fl_main, SongsListFragment.newInstance(Constant.MUSIC_LIST_CUSTOM_ +
+                            Constant.CUSTOM_LIST_LATELY),
+                    Constant.MUSIC_LIST_CUSTOM_ + Constant.CUSTOM_LIST_LATELY);
             break;
         case R.id.ll_all:
             addFragment(R.id.fl_main, new AllMusicFragment(), "AllMusicFragment");
