@@ -14,7 +14,7 @@
             android:id="@+id/v_listsplay_play"
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"
+            android:background="@color/colorPrimary"
             android:visibility="invisible" />
 
         <ImageView
@@ -95,7 +95,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/custom_seek_thumb_color"
+        android:background="@color/textColor_gray"
         >
         <LinearLayout
             android:gravity="center"

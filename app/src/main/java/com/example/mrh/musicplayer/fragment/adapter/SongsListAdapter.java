@@ -163,13 +163,14 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mVListsplayPlay.setVisibility(View.INVISIBLE);
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.GONE);
             songsListViewHolder.mIvListsplayMore.setVisibility(View.VISIBLE);
-            songsListViewHolder.rootView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+            songsListViewHolder.rootView.setBackgroundColor(Color.WHITE);
             break;
         case CONDITION_SONGSLIST_1:
             songsListViewHolder.mVListsplayPlay.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.GONE);
             songsListViewHolder.mIvListsplayMore.setVisibility(View.VISIBLE);
-            songsListViewHolder.rootView.setBackgroundColor(Color.argb(55, 99, 55, 55));
+            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
+                    .bgColor_gray));
             shouldRevomeView.put("shouldRemoveView", songsListViewHolder.rootView);
             shouldRevomeView.put("position", position);
 
@@ -178,7 +179,8 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mVListsplayPlay.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.GONE);
             songsListViewHolder.mIvListsplayMore.setVisibility(View.VISIBLE);
-            songsListViewHolder.rootView.setBackgroundColor(Color.argb(55, 55, 55, 55));
+            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
+                    .bgColor_gray));
             shouldRevomeView.put("shouldRemoveView", songsListViewHolder.rootView);
             shouldRevomeView.put("position", position);
 
@@ -189,7 +191,8 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setBackgroundResource(R.drawable
                     .btn_check_off_holo_light);
-            songsListViewHolder.rootView.setBackgroundColor(Color.argb(33, 88, 88, 55));
+            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
+                    .bgColor_gray));
             //多选时动画处理
             if (prePosition != INITPOSTION && prePosition == position){
                 closeView();
@@ -201,7 +204,8 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setBackgroundResource(R.drawable
                     .btn_check_on_holo_light);
-            songsListViewHolder.rootView.setBackgroundColor(Color.argb(33, 88, 88, 55));
+            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
+                    .bgColor_gray));
             break;
         }
 

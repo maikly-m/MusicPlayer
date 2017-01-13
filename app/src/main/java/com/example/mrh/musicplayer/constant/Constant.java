@@ -9,6 +9,12 @@ public class Constant {
     public static final String CUSTOM_LIST = "list_custom";
     public static final String CUSTOM_LIST_LOVE = "最爱";
     public static final String CUSTOM_LIST_LATELY = "最近";
+    public static final int NOTIFICATION = 0x00;
+    public static final String NOTIFICATION_PRE = "notification_pre";
+    public static final String NOTIFICATION_NEXT = "notification_next";
+    public static final String NOTIFICATION_PLAY = "notification_play";
+    public static final String NOTIFICATION_EXIT = "notification_exit";
+    public static final String NOTIFICATION_SHOW = "notification_show";
     //mainActivty
     public static final String OK_DATA = "ok_data"; //初始化加载数据完毕
     public static final String OK_INITSERVICE = "ok_initservice"; //初始化服务

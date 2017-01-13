@@ -439,6 +439,29 @@ public class Utils {
     }
 
     /**
+     *  优化图片，图片格式jpg,以便减少内存
+     * @param context
+     * @param resid
+     * @return
+     */
+    public static Bitmap optimizeDrawble_(Context context, @DrawableRes int resid){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        BitmapFactory.decodeResource(context.getResources(), resid, options);
+        int originalWidth = options.outWidth;
+        int originalHeight = options.outHeight;
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+        bitmapOptions.inSampleSize = 1;
+        bitmapOptions.inScaled = true;
+        bitmapOptions.inTargetDensity = 1;
+        bitmapOptions.inDensity = 1;
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resid, bitmapOptions);
+        return Bitmap.createBitmap(bitmap, 0, 0, originalWidth, originalHeight);
+    }
+
+    /**
      *  比例缩放图片
      * @param x
      * @param y

@@ -1,6 +1,9 @@
 package com.example.mrh.musicplayer.service;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -17,6 +20,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.MainActivity;
@@ -112,6 +117,10 @@ public class PlaySevice extends Service {
     public List<String> mList_sort;
     public ArrayList<MusicInfo> mL;
     private boolean isFullLately = false;
+    private RemoteViews mRemoteViews;
+    private NotificationManager mNotificationManager;
+    private BroadcastReceiver mNotificationReciever;
+    private Notification mNotification;
 
     @Nullable
     @Override
@@ -132,9 +141,48 @@ public class PlaySevice extends Service {
         //网络下载后需要更新mediastore
 //        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
 //                Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+        initNotificationReceiver();
         initData();
         init();
         mBinder = new MusicBinder(this);
+    }
+
+    private void initNotificationReceiver () {
+        mNotificationReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive (Context context, Intent intent) {
+                switch (intent.getAction()){
+                case Constant.NOTIFICATION_PRE:
+                    if (mMusicSongsname != null){
+                        preMusic();
+                    }
+                    break;
+                case Constant.NOTIFICATION_PLAY:
+                    if (mMusicSongsname != null){
+                        playOrPause();
+                    }
+                    break;
+                case Constant.NOTIFICATION_NEXT:
+                    if (mMusicSongsname != null){
+                        nextMusic();
+                    }
+                    break;
+                case Constant.NOTIFICATION_EXIT:
+
+                    break;
+                case Constant.NOTIFICATION_SHOW:
+
+                    break;
+                }
+            }
+        };
+        IntentFilter f = new IntentFilter();
+        f.addAction(Constant.NOTIFICATION_PRE);
+        f.addAction(Constant.NOTIFICATION_PLAY);
+        f.addAction(Constant.NOTIFICATION_NEXT);
+        f.addAction(Constant.NOTIFICATION_EXIT);
+        f.addAction(Constant.NOTIFICATION_SHOW);
+        registerReceiver(mNotificationReciever, f);
     }
 
     /**
@@ -144,7 +192,8 @@ public class PlaySevice extends Service {
         new Thread() {
             @Override
             public void run () {
-                SharedPreferences sp = getSharedPreferences(Constant.MUSIC_PLAY_LATELY, Context.MODE_PRIVATE);
+                SharedPreferences sp = getSharedPreferences(Constant.MUSIC_PLAY_LATELY, Context
+                        .MODE_PRIVATE);
                 mList_lately = new LinkedList<>();
                 mList_sort = new LinkedList<>();
                 HashMap<String, String> map = new HashMap<>();
@@ -152,12 +201,13 @@ public class PlaySevice extends Service {
                 for (int i = 0; i < Constant.MUSIC_PLAY_LATELY_COUNT; i++){
                     MusicListLately m = new MusicListLately();
                     m.setName(sp.getString(String.valueOf(i), null));
-                    m.setOrder(sp.getLong(String.valueOf(i+Constant.MUSIC_PLAY_LATELY_SPACE), 0));
+                    m.setOrder(sp.getLong(String.valueOf(i + Constant.MUSIC_PLAY_LATELY_SPACE), 0));
                     mList_lately.add(m);
                     String s = String.valueOf(sp.getLong(String.valueOf(i + Constant
                             .MUSIC_PLAY_LATELY_SPACE), 0));
                     if (!s.equals("0")){
-                        sort.add(sp.getLong(String.valueOf(i+Constant.MUSIC_PLAY_LATELY_SPACE), 0));
+                        sort.add(sp.getLong(String.valueOf(i + Constant.MUSIC_PLAY_LATELY_SPACE),
+                                0));
                         map.put(s, sp.getString(String.valueOf(i), null));
                     }
                 }
@@ -192,13 +242,13 @@ public class PlaySevice extends Service {
                             }
                         }
                         if (m.getListName().equals(Constant.MUSIC_LIST_CUSTOM_ + Constant
-                                .CUSTOM_LIST_LOVE)) {
+                                .CUSTOM_LIST_LOVE)){
                             songs_love.put(m.getListName(), transfer);
-                        }else {
+                        } else{
                             songs_custom.put(m.getListName(), transfer);
                         }
                     }
-                } else {
+                } else{
                     //创建最爱列表
                     sqlHelper.CreatePlayTable(CUSTOM_LIST);
                     ContentValues cv = new ContentValues();
@@ -221,13 +271,13 @@ public class PlaySevice extends Service {
                 list_custom.add(1, m);
                 mL = new ArrayList<>();
                 if (mList_sort.size() != 0){
-                        for (int j = 0; j < mList_sort.size(); j++){
-                            for (int i = 0; i < mAllSongs.size(); i++){
-                                if (mAllSongs.get(i).getTITLE().equals(mList_sort.get(j))){
-                                    mL.add(mAllSongs.get(i));
-                                }
+                    for (int j = 0; j < mList_sort.size(); j++){
+                        for (int i = 0; i < mAllSongs.size(); i++){
+                            if (mAllSongs.get(i).getTITLE().equals(mList_sort.get(j))){
+                                mL.add(mAllSongs.get(i));
                             }
                         }
+                    }
                 }
                 songs_lately.put(Constant.MUSIC_LIST_CUSTOM_ + Constant
                         .CUSTOM_LIST_LATELY, mL);
@@ -491,19 +541,21 @@ public class PlaySevice extends Service {
 
     /**
      * 设置最近播放列表歌曲
+     *
      * @param position
      */
     private void setLatelySong (int position) {
         if (this.mMusicListname.equals(Constant.MUSIC_LIST_CUSTOM_ +
-            Constant.MUSIC_PLAY_LATELY)){
+                Constant.MUSIC_PLAY_LATELY)){
             return;
         }
         String title = mList.get(position).getTITLE();
         boolean isHave = false;
         int p = 0;
-        SharedPreferences sp = getSharedPreferences(Constant.MUSIC_PLAY_LATELY, Context.MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(Constant.MUSIC_PLAY_LATELY, Context
+                .MODE_PRIVATE);
         SharedPreferences.Editor edit = sp.edit();
-        long millis = System.currentTimeMillis() /100;
+        long millis = System.currentTimeMillis() / 100;
         String s = String.valueOf(millis);
         String substring = s.substring(s.length() - 9, s.length());
         if (mL.size() >= Constant.MUSIC_PLAY_LATELY_COUNT){
@@ -521,9 +573,9 @@ public class PlaySevice extends Service {
                 int location = 0;
                 long order = mList_lately.get(0).getOrder();
                 for (int i = 0; i < Constant.MUSIC_PLAY_LATELY_COUNT - 1; i++){
-                    if (order > mList_lately.get(i+1).getOrder()){
-                        location = i+1;
-                        order = mList_lately.get(i+1).getOrder();
+                    if (order > mList_lately.get(i + 1).getOrder()){
+                        location = i + 1;
+                        order = mList_lately.get(i + 1).getOrder();
                     }
 
                 }
@@ -532,11 +584,12 @@ public class PlaySevice extends Service {
                 m.setOrder(Long.parseLong(substring));
                 mList_lately.set(location, m);
 
-                mL.remove(mL.size()-1);
+                mL.remove(mL.size() - 1);
                 mL.add(0, mList.get(position));
 
                 edit.putString(String.valueOf(location), title);
-                edit.putLong(String.valueOf(location + Constant.MUSIC_PLAY_LATELY_SPACE), Long.parseLong
+                edit.putLong(String.valueOf(location + Constant.MUSIC_PLAY_LATELY_SPACE), Long
+                        .parseLong
                         (substring));
             } else{
                 for (int i = 0; i < mAllSongs.size(); i++){
@@ -561,7 +614,7 @@ public class PlaySevice extends Service {
                     }
                 }
             }
-        }else {
+        } else{
             MusicInfo musicInfo = mL.get(p);
             mL.remove(p);
             mL.add(0, musicInfo);
@@ -735,6 +788,7 @@ public class PlaySevice extends Service {
         EventBus.getDefault().unregister(this);
         //反注册receiver
         unregisterReceiver(mReceiver);
+        unregisterReceiver(mNotificationReciever);
         Message message = Message.obtain();
         message.what = MyMediaPlayer.QUIT;
         mPlayHandler.sendMessage(message);
@@ -870,7 +924,64 @@ public class PlaySevice extends Service {
                 mainActivity.mTvMusicArtist.setText("");
             }
             mainActivity.setVolumeControlStream(AudioManager.STREAM_MUSIC);//可以控制音量
+            addNotification();
+            break;
+        case Constant.UPDATE_MUSIC_START:
+            mRemoteViews.setTextViewText(R.id.tv_notification_title, mMusicSongsname);
+            mRemoteViews.setTextViewText(R.id.tv_notification_artist, mMusicArtistname);
+            mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable.pause_64px_normal);
+            mNotificationManager.notify(Constant.NOTIFICATION, mNotification);
+            break;
+        case Constant.UPDATE_MUSIC_PAUSE:
+            mRemoteViews.setTextViewText(R.id.tv_notification_title, mMusicSongsname);
+            mRemoteViews.setTextViewText(R.id.tv_notification_artist, mMusicArtistname);
+            mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable.play_64px_normal);
+            mNotificationManager.notify(Constant.NOTIFICATION, mNotification);
             break;
         }
+    }
+
+    private void addNotification () {
+        mNotificationManager = (NotificationManager)
+                PlaySevice.this.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(PlaySevice.this);
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+        builder.setSmallIcon(R.drawable.music_icon);
+        builder.setContentTitle("");
+        builder.setContentText("");
+        builder.setOngoing(true);
+        mRemoteViews = new RemoteViews(getPackageName(), R.layout
+                .notification_remoteview);
+        mRemoteViews.setImageViewBitmap(R.id.iv_notification, Utils.optimizeDrawble_(PlaySevice
+                .this, R.drawable.music_200px));
+        if (mMusicSongsname != null){
+            mRemoteViews.setTextViewText(R.id.tv_notification_title, mMusicSongsname);
+            mRemoteViews.setTextViewText(R.id.tv_notification_artist, mMusicArtistname);
+        }
+
+        mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_pre,
+                PendingIntent.getBroadcast(PlaySevice.this, 100, new Intent(Constant
+                        .NOTIFICATION_PRE),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+        mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_play,
+                PendingIntent.getBroadcast(PlaySevice.this, 101, new Intent(Constant
+                        .NOTIFICATION_PLAY),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+        mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_next,
+                PendingIntent.getBroadcast(PlaySevice.this, 102, new Intent(Constant
+                        .NOTIFICATION_NEXT),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+        mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_exit,
+                PendingIntent.getBroadcast(PlaySevice.this, 103, new Intent(Constant
+                        .NOTIFICATION_EXIT),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+        mRemoteViews.setOnClickPendingIntent(R.id.iv_notification,
+                PendingIntent.getBroadcast(PlaySevice.this, 104, new Intent(Constant
+                                .NOTIFICATION_SHOW),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+
+        builder.setCustomBigContentView(mRemoteViews);
+        mNotification = builder.build();
+        mNotificationManager.notify(Constant.NOTIFICATION, mNotification);
     }
 }

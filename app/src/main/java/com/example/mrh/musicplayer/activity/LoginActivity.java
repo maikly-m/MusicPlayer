@@ -150,6 +150,7 @@ public class LoginActivity extends BaseActivity {
             }
         }, 500);
     }
+
     //开启服务
     private void initService () {
         Intent intent = new Intent(LoginActivity.this, PlaySevice.class);

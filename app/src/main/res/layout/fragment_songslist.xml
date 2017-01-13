@@ -154,7 +154,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@color/colorPrimary">
+            android:background="@color/textColor_gray">
             <LinearLayout
                 android:id="@+id/ll_songslist_delete"
                 android:gravity="center"
