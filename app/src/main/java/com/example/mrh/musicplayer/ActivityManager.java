@@ -42,7 +42,6 @@ public class ActivityManager {
     //移除并关闭activity
     public void removeActivity(Activity activity){
         if (activity != null && mActivities.contains(activity)){
-            mActivities.remove(activity);
             activity.finish();
         }
     }
@@ -59,7 +58,6 @@ public class ActivityManager {
     public void removeActivity(Class<?> cls){
         for (Activity activity : mActivities){
             if (activity.getClass().equals(cls)){
-                mActivities.remove(activity);
                 activity.finish();
                 break;
             }

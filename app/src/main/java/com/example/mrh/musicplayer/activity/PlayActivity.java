@@ -351,6 +351,7 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         songs_data = mPlayer.songs_data;
 
         setView();
+        mPlayer.currentActivity = "PlayActivity";
     }
 
 
@@ -440,6 +441,9 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onResume () {
         super.onResume();
+        if (mPlayer != null){
+            mPlayer.currentActivity = "PlayActivity";
+        }
     }
 
     @Override

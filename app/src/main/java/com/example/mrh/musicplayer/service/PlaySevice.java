@@ -1,6 +1,7 @@
 package com.example.mrh.musicplayer.service;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,15 +17,18 @@ import android.media.MediaPlayer;
 import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 import android.media.audiofx.Visualizer;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Process;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.MainActivity;
+import com.example.mrh.musicplayer.activity.PlayActivity;
 import com.example.mrh.musicplayer.broadcast.UpdateMediaStoreReceiver;
 import com.example.mrh.musicplayer.constant.Constant;
 import com.example.mrh.musicplayer.custom.MyMediaPlayer;
@@ -42,6 +46,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -118,9 +124,13 @@ public class PlaySevice extends Service {
     public ArrayList<MusicInfo> mL;
     private boolean isFullLately = false;
     private RemoteViews mRemoteViews;
-    private NotificationManager mNotificationManager;
+    public NotificationManager mNotificationManager;
     private BroadcastReceiver mNotificationReciever;
     private Notification mNotification;
+    /**
+     * 当前交互的Activity
+     */
+    public String currentActivity = null;
 
     @Nullable
     @Override
@@ -145,6 +155,7 @@ public class PlaySevice extends Service {
         initData();
         init();
         mBinder = new MusicBinder(this);
+        DebugUtils.log_d(TAG, "onCreate+++++");
     }
 
     private void initNotificationReceiver () {
@@ -168,10 +179,10 @@ public class PlaySevice extends Service {
                     }
                     break;
                 case Constant.NOTIFICATION_EXIT:
-
+                    exit();
                     break;
                 case Constant.NOTIFICATION_SHOW:
-
+                    showActivity();
                     break;
                 }
             }
@@ -183,6 +194,97 @@ public class PlaySevice extends Service {
         f.addAction(Constant.NOTIFICATION_EXIT);
         f.addAction(Constant.NOTIFICATION_SHOW);
         registerReceiver(mNotificationReciever, f);
+    }
+
+    /**
+     * 正常退出
+     */
+    private void exit () {
+        if (mMediaPlayer.isPlaying()){
+            stopMusic();
+        }
+        com.example.mrh.musicplayer.ActivityManager.getActivityManager().exitApp();
+        mNotificationManager.cancel(Constant.NOTIFICATION);
+        collapseStatusBar();
+        //正常退出保存，直接kill掉虚拟机不保存
+        saveData();
+        Message message = Message.obtain();
+        message.what = MyMediaPlayer.QUIT;
+        mPlayHandler.sendMessage(message);
+    }
+
+    private void showActivity () {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            final int PROCESS_STATE_TOP = 2;
+            ActivityManager.RunningAppProcessInfo currentInfo = null;
+            Field field = null;
+            try {
+                field = ActivityManager.RunningAppProcessInfo.class.getDeclaredField("processState");
+            } catch (Exception ignored) {
+            }
+            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appList = am.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo app : appList) {
+                if (app.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                        && app.importanceReasonCode == ActivityManager.RunningAppProcessInfo.REASON_UNKNOWN) {
+                    Integer state = null;
+                    try {
+                        state = field.getInt(app);
+                    } catch (Exception e) {
+                    }
+                    if (state != null && state == PROCESS_STATE_TOP) {
+                        currentInfo = app;
+                        break;
+                    }
+                }
+            }
+            int myPid = Process.myPid();
+            if (currentInfo == null || currentInfo.pid != myPid){
+                Intent intent = null;
+                switch (currentActivity){
+                case "MainActivity":
+                    intent = new Intent(PlaySevice.this, MainActivity.class);
+                    break;
+                case "PlayActivity":
+                    intent = new Intent(PlaySevice.this, PlayActivity.class);
+                    break;
+                }
+                if (intent != null){
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                    startActivity(intent);
+                }
+            }
+        } else{
+            ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            String packName = getPackageName();
+            ActivityManager.RunningTaskInfo info = manager.getRunningTasks(1).get(0);
+            String packageName = info.topActivity.getPackageName();
+
+            if (!packName.equals(packageName)){
+                //在后台
+                manager.moveTaskToFront(info.id, ActivityManager.MOVE_TASK_WITH_HOME);
+            }
+        }
+        collapseStatusBar();
+    }
+
+    /**
+     * 收起状态栏
+     */
+    public  void collapseStatusBar() {
+        Object sbservice = getSystemService("statusbar");
+        try {
+            Class<?> statusBarManager = Class.forName("android.app.StatusBarManager");
+            Method collapse;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                collapse = statusBarManager.getMethod("collapsePanels");
+            } else {
+                collapse = statusBarManager.getMethod("collapse");
+            }
+            collapse.invoke(sbservice);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -226,7 +328,7 @@ public class PlaySevice extends Service {
                 list_allsongs.add(new MusicList(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs
                         .size()));
                 songs_all.put(Constant.MUSIC_LIST_ALLSONGS_ + "所有音乐", mAllSongs);
-                list_custom = sqlHelper.getList(Constant.CUSTOM_LIST, null, null);
+                list_custom = sqlHelper.getList(CUSTOM_LIST, null, null);
                 //自定义列表获取数据
                 if (list_custom.size() != 0){
                     for (MusicList m : list_custom){
@@ -361,7 +463,7 @@ public class PlaySevice extends Service {
                     mMediaPlayer.release();
                     mPlayThread.quit();
                     mProgressThread.quit();
-                    EventBus.getDefault().post(Constant.UPDATE);
+                    stopSelf();
                     break;
                 case MyMediaPlayer.RESET:
                     ProgressThread.flag = false;
@@ -384,8 +486,10 @@ public class PlaySevice extends Service {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion (MediaPlayer mp) {
-                nextMusic();
-                EventBus.getDefault().post(Constant.UPDATE_FRAGMENT_LIST);
+                if (mMusicListname != null && mMusicSongsname != null){
+                    nextMusic();
+                    EventBus.getDefault().post(Constant.UPDATE_FRAGMENT_LIST);
+                }
             }
         });
         mProgressThread = new ProgressThread(getString(R.string.ProgressThread));
@@ -449,6 +553,7 @@ public class PlaySevice extends Service {
             duration = Integer.valueOf(m.getDURATION());
             break;
         }
+        EventBus.getDefault().post(Constant.UPDATE_FRAGMENT_LIST);
     }
 
     /**
@@ -590,7 +695,7 @@ public class PlaySevice extends Service {
                 edit.putString(String.valueOf(location), title);
                 edit.putLong(String.valueOf(location + Constant.MUSIC_PLAY_LATELY_SPACE), Long
                         .parseLong
-                        (substring));
+                                (substring));
             } else{
                 for (int i = 0; i < mAllSongs.size(); i++){
                     if (mAllSongs.get(i).getDATA().equals(title)){
@@ -778,21 +883,17 @@ public class PlaySevice extends Service {
         //保证kill掉后不重启
         onStart(intent, startId);
         return Service.START_NOT_STICKY;
+//        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy () {
         super.onDestroy();
-        //正常退出保存，直接kill掉虚拟机不保存
-        saveData();
         EventBus.getDefault().unregister(this);
         //反注册receiver
         unregisterReceiver(mReceiver);
         unregisterReceiver(mNotificationReciever);
-        Message message = Message.obtain();
-        message.what = MyMediaPlayer.QUIT;
-        mPlayHandler.sendMessage(message);
-        DebugUtils.log_d(TAG, "destroy");
+//        System.exit(0);
     }
 
     private void saveData () {
@@ -929,22 +1030,24 @@ public class PlaySevice extends Service {
         case Constant.UPDATE_MUSIC_START:
             mRemoteViews.setTextViewText(R.id.tv_notification_title, mMusicSongsname);
             mRemoteViews.setTextViewText(R.id.tv_notification_artist, mMusicArtistname);
-            mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable.pause_64px_normal);
+            mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable
+                    .pause_64px_normal);
             mNotificationManager.notify(Constant.NOTIFICATION, mNotification);
             break;
         case Constant.UPDATE_MUSIC_PAUSE:
-            mRemoteViews.setTextViewText(R.id.tv_notification_title, mMusicSongsname);
-            mRemoteViews.setTextViewText(R.id.tv_notification_artist, mMusicArtistname);
-            mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable.play_64px_normal);
+            mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable
+                    .play_64px_normal);
             mNotificationManager.notify(Constant.NOTIFICATION, mNotification);
+            break;
+        case Constant.UPDATE_EXIT:
+            exit();
             break;
         }
     }
 
     private void addNotification () {
-        mNotificationManager = (NotificationManager)
-                PlaySevice.this.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(PlaySevice.this);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder builder =  new NotificationCompat.Builder(PlaySevice.this);
         builder.setPriority(NotificationCompat.PRIORITY_MAX);
         builder.setSmallIcon(R.drawable.music_icon);
         builder.setContentTitle("");
@@ -957,28 +1060,39 @@ public class PlaySevice extends Service {
         if (mMusicSongsname != null){
             mRemoteViews.setTextViewText(R.id.tv_notification_title, mMusicSongsname);
             mRemoteViews.setTextViewText(R.id.tv_notification_artist, mMusicArtistname);
+        }else {
+            mRemoteViews.setTextViewText(R.id.tv_notification_title, "没有歌曲在播放");
+            mRemoteViews.setTextViewText(R.id.tv_notification_artist, "");
         }
 
         mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_pre,
                 PendingIntent.getBroadcast(PlaySevice.this, 100, new Intent(Constant
-                        .NOTIFICATION_PRE),
+                                .NOTIFICATION_PRE),
                         PendingIntent.FLAG_UPDATE_CURRENT));
         mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_play,
                 PendingIntent.getBroadcast(PlaySevice.this, 101, new Intent(Constant
-                        .NOTIFICATION_PLAY),
+                                .NOTIFICATION_PLAY),
                         PendingIntent.FLAG_UPDATE_CURRENT));
         mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_next,
                 PendingIntent.getBroadcast(PlaySevice.this, 102, new Intent(Constant
-                        .NOTIFICATION_NEXT),
+                                .NOTIFICATION_NEXT),
                         PendingIntent.FLAG_UPDATE_CURRENT));
         mRemoteViews.setOnClickPendingIntent(R.id.iv_notification_exit,
                 PendingIntent.getBroadcast(PlaySevice.this, 103, new Intent(Constant
-                        .NOTIFICATION_EXIT),
+                                .NOTIFICATION_EXIT),
                         PendingIntent.FLAG_UPDATE_CURRENT));
         mRemoteViews.setOnClickPendingIntent(R.id.iv_notification,
                 PendingIntent.getBroadcast(PlaySevice.this, 104, new Intent(Constant
                                 .NOTIFICATION_SHOW),
                         PendingIntent.FLAG_UPDATE_CURRENT));
+        mRemoteViews.setImageViewResource(R.id.iv_notification_pre, R.drawable
+                .pre_64px);
+        mRemoteViews.setImageViewResource(R.id.iv_notification_play, R.drawable
+                .play_64px_normal);
+        mRemoteViews.setImageViewResource(R.id.iv_notification_next, R.drawable
+                .next_64px);
+        mRemoteViews.setImageViewResource(R.id.iv_notification_exit, R.drawable
+                .exit_48px);
 
         builder.setCustomBigContentView(mRemoteViews);
         mNotification = builder.build();

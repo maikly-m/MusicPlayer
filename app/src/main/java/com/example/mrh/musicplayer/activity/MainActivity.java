@@ -3,7 +3,6 @@ package com.example.mrh.musicplayer.activity;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -34,7 +33,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.mrh.musicplayer.ActivityManager;
 import com.example.mrh.musicplayer.R;
 import com.example.mrh.musicplayer.activity.adapter.PopListAdapter;
 import com.example.mrh.musicplayer.activity.adapter.PresetReverbAdapter;
@@ -201,6 +199,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         initEqulizer();
         initBassBoost();
         EventBus.getDefault().post(Constant.UPDATE_INIT);
+
+        mPlayer.currentActivity = "MainActivity";
     }
 
     private void initBassBoost () {
@@ -316,6 +316,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         };
         bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onResume () {
+        super.onResume();
+        if (mPlayer != null){
+            mPlayer.currentActivity = "MainActivity";
+        }
     }
 
     @Override
@@ -811,13 +819,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         case R.id.iv_music_go:
             if (mPlayer.mIsExist){
                 mPlayer.playOrPause();
-                EventBus.getDefault().post(Constant.UPDATE_FRAGMENT_LIST);
+
             }
             break;
         case R.id.iv_music_next:
             if (mPlayer.mIsExist){
                 mPlayer.nextMusic();
-                EventBus.getDefault().post(Constant.UPDATE_FRAGMENT_LIST);
             }
             break;
         case R.id.main_list:
@@ -892,16 +899,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             va2.start();
             break;
         case R.id.btn_exit:
-            List<Activity> activityList = ActivityManager.getActivityManager().getActivityList();
-            for (Activity activity : activityList){
-                if (!activity.getComponentName().getPackageName().equals(this.getPackageName())){
-                    activity.finish();
-                }
-            }
-            Intent intent = new Intent(MainActivity.this, PlaySevice.class);
-            intent.setAction("com.example.mrh.musicplayer.service.PlaySevice");
-            stopService(intent);
-            finish();
+            EventBus.getDefault().post(Constant.UPDATE_EXIT);
             break;
         }
     }

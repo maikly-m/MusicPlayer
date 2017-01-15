@@ -30,6 +30,7 @@ public class Constant {
     public static final String UPDATE_PREGRESS = "update_pregress"; //更新进度
     public static final String UPDATE_PLAY_RESET = "update_play_reset"; //清空播放,比如播放时删除了歌曲
     public static final String UPDATE_PLAY_LATELY = "update_play_lately"; //通知 最近 列表更新
+    public static final String UPDATE_EXIT = "update_exit"; //通知 退出
     //playActivity
     public static final String PLAYACTIVITY_INITSERVICE =
             "playactivity_initservice";//playactivityl连接上服务
