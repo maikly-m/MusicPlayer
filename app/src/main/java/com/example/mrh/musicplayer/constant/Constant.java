@@ -9,6 +9,12 @@ public class Constant {
     public static final String CUSTOM_LIST = "list_custom";
     public static final String CUSTOM_LIST_LOVE = "最爱";
     public static final String CUSTOM_LIST_LATELY = "最近";
+    //theme
+    public static final String CUSTOM_THEME = "custom_theme";
+    public static final String CUSTOM_THEME_NAME = "custom_theme_name";
+    public static final String CUSTOM_THEME_DAY = "白天";
+    public static final String CUSTOM_THEME_NIGHT = "夜晚";
+    //notification
     public static final int NOTIFICATION = 0x00;
     public static final String NOTIFICATION_PRE = "notification_pre";
     public static final String NOTIFICATION_NEXT = "notification_next";

@@ -3,7 +3,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-    android:background="@color/white_">
+    android:background="?attr/musicTopColor">
     <LinearLayout
         android:id="@+id/ll_like"
         android:orientation="horizontal"
@@ -100,7 +100,7 @@
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
     <LinearLayout
         android:id="@+id/ll_all"
         android:orientation="horizontal"
@@ -126,7 +126,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#ffffffff">
+        android:background="?attr/bgColor">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

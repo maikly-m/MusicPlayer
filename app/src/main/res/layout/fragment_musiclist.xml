@@ -3,13 +3,13 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-    android:background="@color/color_white">
+    android:background="?attr/bgColor">
 
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@color/colorPrimary">
+        android:background="?attr/colorPrimary">
         <LinearLayout
             android:id="@+id/ll_list_back"
             android:layout_marginLeft="15dp"
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="歌单"
-            android:textColor="@color/textColor_white"/>
+            android:textColor="?attr/textColor"/>
     </RelativeLayout >
         <TextView
             android:id="@+id/tv_list_num"
@@ -43,13 +43,14 @@
             android:layout_height="50dp"
             android:textSize="18sp"
             android:gravity="center_vertical"
+            android:textColor="?attr/textMusicColor"
             android:text="歌单（0）"/>
     <View
         android:layout_width="match_parent"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -67,6 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:textColor="?attr/textMusicColor"
             android:text="添加"/>
     </LinearLayout >
     <View
@@ -74,7 +76,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
     <ListView
         android:id="@+id/lv_musiclist"
         android:layout_width="match_parent"

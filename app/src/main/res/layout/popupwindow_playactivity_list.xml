@@ -8,7 +8,7 @@
         android:id="@+id/rl_playactivity"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:background="@color/popupwindow_color_bg"
+        android:background="?attr/popListColor"
         >
         <com.example.mrh.musicplayer.custom.MarqueeTextView
             android:layout_centerInParent="true"
@@ -24,16 +24,14 @@
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:text="播放列表"
-            />
+            android:textColor="?attr/textMusicColor"/>
     </RelativeLayout >
     <View
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
     <ListView
-        android:background="@color/popupwindow_color_bg"
+        android:background="?attr/popListColor"
         android:layout_weight="1"
         android:id="@+id/lv_playactivity_list"
         android:layout_width="match_parent"

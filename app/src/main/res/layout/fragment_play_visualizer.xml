@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:text="歌词没找到"
             android:textSize="15sp"
-            android:textColor="@color/color_white"/>
+            android:textColor="?attr/textColor"/>
         <com.example.mrh.musicplayer.custom.MyLyrcisView
             android:layout_marginTop="40dp"
             android:id="@+id/visualizer_lrc"

@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical" >
+              android:orientation="vertical"
+    android:background="?attr/bgColor">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,7 +35,8 @@
                 android:text="歌曲"
                 android:textSize="18sp"
                 android:maxLines="1"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:textColor="?attr/textMusicColor"/>
 
             <TextView
                 android:id="@+id/tv_music_count"
@@ -47,15 +49,16 @@
                 android:text="0首"
                 android:textSize="16sp"
                 android:maxLines="1"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:textColor="?attr/textMusicColor"/>
         </LinearLayout >
 
         <ImageView
             android:id="@+id/iv_musiclist_delete"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="15dp"
             android:background="@drawable/delete_64px" />
     </LinearLayout >
 
@@ -64,6 +67,6 @@
         android:layout_height="0.5dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@color/color_gray_divider" />
+        android:background="?attr/dividerColor" />
 
 </LinearLayout >

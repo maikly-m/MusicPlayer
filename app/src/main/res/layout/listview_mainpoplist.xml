@@ -7,7 +7,7 @@
         android:id="@+id/v_mainpop_play"
         android:layout_width="4dp"
         android:layout_height="match_parent"
-        android:background="@color/colorAccent"
+        android:background="?attr/playColor"
         android:visibility="invisible" />
     <TextView
         android:id="@+id/tv_mainpop_order"
@@ -44,7 +44,8 @@
             android:text="歌曲"
             android:textSize="14sp"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+            android:textColor="?attr/textMusicColor"/>
 
         <TextView
             android:id="@+id/tv_mainlist_artist"
@@ -56,7 +57,8 @@
             android:text="歌手"
             android:textSize="12sp"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+            android:textColor="?attr/textMusicColor"/>
     </LinearLayout >
 
 </LinearLayout >

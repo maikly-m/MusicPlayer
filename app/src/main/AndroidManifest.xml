@@ -16,7 +16,7 @@
         android:icon="@drawable/music_icon_96px"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Day_AppTheme"
         android:name=".MyApplication"
         >
         <activity android:name=".activity.LoginActivity"

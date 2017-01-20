@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -47,9 +48,14 @@ public class MyLyrcisView extends View {
 
     public MyLyrcisView (Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.lrcColor, typedValue, true);
+        TypedValue tv = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.lrcCurrentColor, tv, true);
+
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(context.getResources().getColor(R.color.white_));
+        mPaint.setColor(context.getResources().getColor(typedValue.resourceId));
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setStrokeWidth(1);
         mPaint.setTextSize(Utils.dip2px(context, 12));
@@ -57,7 +63,7 @@ public class MyLyrcisView extends View {
 
         mPaint_ = new Paint();
         mPaint_.setAntiAlias(true);
-        mPaint_.setColor(Color.WHITE);
+        mPaint_.setColor(context.getResources().getColor(tv.resourceId));
         mPaint_.setStyle(Paint.Style.FILL);
         mPaint_.setStrokeWidth(1);
         mPaint_.setTextSize(Utils.dip2px(context, 16));

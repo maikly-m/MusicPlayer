@@ -1,5 +1,5 @@
 <resources >
-    <string name="app_name" >MusicPlayer</string >
+    <string name="app_name" >M音乐</string >
     <string name="PlayThread" >PlayThread</string >
     <string name="ProgressThread" >ProgressThread</string >
 </resources >

@@ -4,9 +4,9 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.ContentValues;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -163,14 +163,11 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mVListsplayPlay.setVisibility(View.INVISIBLE);
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.GONE);
             songsListViewHolder.mIvListsplayMore.setVisibility(View.VISIBLE);
-            songsListViewHolder.rootView.setBackgroundColor(Color.WHITE);
             break;
         case CONDITION_SONGSLIST_1:
             songsListViewHolder.mVListsplayPlay.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.GONE);
             songsListViewHolder.mIvListsplayMore.setVisibility(View.VISIBLE);
-            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
-                    .bgColor_gray));
             shouldRevomeView.put("shouldRemoveView", songsListViewHolder.rootView);
             shouldRevomeView.put("position", position);
 
@@ -179,8 +176,6 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mVListsplayPlay.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.GONE);
             songsListViewHolder.mIvListsplayMore.setVisibility(View.VISIBLE);
-            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
-                    .bgColor_gray));
             shouldRevomeView.put("shouldRemoveView", songsListViewHolder.rootView);
             shouldRevomeView.put("position", position);
 
@@ -191,8 +186,6 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setBackgroundResource(R.drawable
                     .btn_check_off_holo_light);
-            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
-                    .bgColor_gray));
             //多选时动画处理
             if (prePosition != INITPOSTION && prePosition == position){
                 closeView();
@@ -204,21 +197,24 @@ public class SongsListAdapter extends BaseAdapter {
             songsListViewHolder.mIvListsplaySelect.setVisibility(View.VISIBLE);
             songsListViewHolder.mIvListsplaySelect.setBackgroundResource(R.drawable
                     .btn_check_on_holo_light);
-            songsListViewHolder.rootView.setBackgroundColor(context.getResources().getColor(R.color
-                    .bgColor_gray));
             break;
         }
 
+        TypedValue typedValue = new TypedValue();
         ViewGroup.LayoutParams lp_lllistsplayview = songsListViewHolder.mLlListsplayView
                 .getLayoutParams();
         switch (cvs.get(position)){
         case IS_HIDE_ANIMATION:
             lp_lllistsplayview.height = 0;
-            songsListViewHolder.mLlListsplay.setBackgroundColor(Color.WHITE);
+            context.getTheme().resolveAttribute(R.attr.bgColor, typedValue, true);
+            songsListViewHolder.mLlListsplay.setBackgroundColor(context.getResources().getColor
+                    (typedValue.resourceId));
             break;
         case IS_SHOW_ANIMATION:
             lp_lllistsplayview.height = mHeight;
-            songsListViewHolder.mLlListsplay.setBackgroundColor(Color.GRAY);
+            context.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+            songsListViewHolder.mLlListsplay.setBackgroundColor(context.getResources().getColor
+                    (typedValue.resourceId));
             break;
         }
         songsListViewHolder.mLlListsplayView.setLayoutParams(lp_lllistsplayview);
@@ -517,7 +513,9 @@ public class SongsListAdapter extends BaseAdapter {
             setListener(va);
             va.start();
         }
-        cv.mLlListsplay.setBackgroundColor(Color.GRAY);
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        cv.mLlListsplay.setBackgroundColor(context.getResources().getColor(typedValue.resourceId));
         isShowAnimation = true;
         cvs.put(position, IS_SHOW_ANIMATION);
         cvs.put(prePosition, IS_HIDE_ANIMATION);
@@ -545,7 +543,9 @@ public class SongsListAdapter extends BaseAdapter {
             setListener(va);
             va.start();
         }
-        cv.mLlListsplay.setBackgroundColor(Color.WHITE);
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.bgColor, typedValue, true);
+        cv.mLlListsplay.setBackgroundColor(context.getResources().getColor(typedValue.resourceId));
         cvs.put(prePosition, IS_HIDE_ANIMATION);
         isShowAnimation = false;
         prePosition = INITPOSTION;
@@ -574,7 +574,10 @@ public class SongsListAdapter extends BaseAdapter {
                     setListener(va);
                     va.start();
 
-                    mCv.mLlListsplay.setBackgroundColor(Color.WHITE);
+                    TypedValue typedValue = new TypedValue();
+                    context.getTheme().resolveAttribute(R.attr.bgColor, typedValue, true);
+                    mCv.mLlListsplay.setBackgroundColor(context.getResources().getColor(typedValue
+                            .resourceId));
                     isShowAnimation = false;
                     cvs.put(prePosition, IS_HIDE_ANIMATION);
                     prePosition = INITPOSTION;

@@ -44,9 +44,9 @@ public class VisualizerFragment extends BaseFragment {
     private boolean isDraw = true;
     private MyLyrcisView mLyrcisView;
     private List<LrcContent> mLrcList = new ArrayList<>();
-    private String lrc_null;
+    private String lrc_ = "有歌词";
     private boolean isReset = false;
-    public static final String LRC_NULL = "没有歌词";
+    public static final String LRC_ = "有歌词";
     /**
      * 正常更新歌词，比如不拖动进度条时
      */
@@ -61,6 +61,7 @@ public class VisualizerFragment extends BaseFragment {
      * 刚进入activity时是否是暂停状态
      */
     private boolean mInitPause = true;
+    private boolean isPrepare = false;
 
     public VisualizerFragment () {
         super();
@@ -122,6 +123,7 @@ public class VisualizerFragment extends BaseFragment {
     private void initData () {
         mPlayActivity = (PlayActivity) this.context;
         initLrc();
+        isPrepare = true;
     }
 
     private void initView () {
@@ -161,7 +163,7 @@ public class VisualizerFragment extends BaseFragment {
             isReset = true;
             break;
         case Constant.UPDATE_PREGRESS:
-            if (lrc_null.equals(LRC_NULL)){
+            if (lrc_.equals(LRC_) && isPrepare){
                 //更新歌词
                 long mUpdate = mPlayActivity.mPlayer.mMediaPlayer.getCurrentPosition();
                 isNormalUpdate = Math.abs(mUpdate - mPreUpdate) < PlaySevice.UPDATE_SPEED + 100;
@@ -219,7 +221,7 @@ public class VisualizerFragment extends BaseFragment {
     private void initLrc () {
         //清除上次的歌词
         mLrcList.clear();
-        lrc_null = LRC_NULL;
+        lrc_ = LRC_;
         String path = null;
         List<MusicInfo> list = mPlayActivity.mPlayer.mMediaPlayer.getPlayList().getList();
         for (int i = 0; i < list.size(); i++){
@@ -241,10 +243,10 @@ public class VisualizerFragment extends BaseFragment {
             }
         });
         if (files.length <= 0){
-            lrc_null = "歌词没有找到";
+            lrc_ = "歌词没有找到";
             mTvPlayvisualizer.setVisibility(View.VISIBLE);
             mLyrcisView.setVisibility(View.INVISIBLE);
-            mTvPlayvisualizer.setText(lrc_null);
+            mTvPlayvisualizer.setText(lrc_);
 
         }else {
             //开始解析歌词
@@ -273,10 +275,10 @@ public class VisualizerFragment extends BaseFragment {
                 mLyrcisView.setList(mLrcList);
             } catch (IOException e){
                 e.printStackTrace();
-                lrc_null = "歌词错误";
+                lrc_ = "歌词错误";
                 mTvPlayvisualizer.setVisibility(View.VISIBLE);
                 mLyrcisView.setVisibility(View.INVISIBLE);
-                mTvPlayvisualizer.setText(lrc_null);
+                mTvPlayvisualizer.setText(lrc_);
             } finally {
                 try{
                     if (br != null){
@@ -293,7 +295,7 @@ public class VisualizerFragment extends BaseFragment {
                 }
             }
         }
-        if (lrc_null.equals(LRC_NULL)){
+        if (lrc_.equals(LRC_)){
             mTvPlayvisualizer.setVisibility(View.INVISIBLE);
             mLyrcisView.setVisibility(View.VISIBLE);
         }

@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@color/colorPrimary">
+        android:background="?attr/colorPrimary">
         <LinearLayout
             android:id="@+id/ll_phonemusic_back"
             android:layout_marginLeft="15dp"
@@ -33,12 +33,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="所有音乐"
-            android:textColor="@color/textColor_white"/>
+            android:textColor="?attr/textColor"/>
     </RelativeLayout >
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white_">
+        android:background="?attr/musicTopColor">
         <ImageView
             android:id="@+id/iv_phonemusic_all"
             android:layout_marginLeft="15dp"
@@ -52,6 +52,7 @@
             android:id="@+id/tv_phonemusic_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="?attr/textMusicColor"
             android:text="已选择0首"/>
         <Button
             android:layout_alignParentRight="true"

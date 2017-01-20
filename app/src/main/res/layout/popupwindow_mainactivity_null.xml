@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:background="@color/popupwindow_color_bg"
+        android:background="?attr/popListColor"
         >
         <TextView
             android:layout_centerInParent="true"
@@ -15,23 +15,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="播放列表"
-            />
+            android:textColor="?attr/textMusicColor"/>
     </RelativeLayout >
     <View
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
     <TextView
-        android:background="@color/popupwindow_color_bg"
+        android:background="?attr/popListColor"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         android:textSize="18sp"
-        android:text="还没选择播放列表">
-
-    </TextView >
+        android:text="还没选择播放列表"
+        android:textColor="?attr/textMusicColor"/>
 
 </LinearLayout >

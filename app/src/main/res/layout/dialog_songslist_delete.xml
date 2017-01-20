@@ -12,11 +12,12 @@
         android:layout_height="40dp"
         android:textSize="14sp"
         android:text="删除"
+        android:textColor="?attr/textColor"
         android:ellipsize="end"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
     <LinearLayout
         android:layout_gravity="center"
         android:gravity="center"
@@ -36,13 +37,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
+            android:textColor="?attr/textColor"
             android:text="同时删除文件"/>
     </LinearLayout >
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/color_gray_divider"/>
+        android:background="?attr/dividerColor"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >

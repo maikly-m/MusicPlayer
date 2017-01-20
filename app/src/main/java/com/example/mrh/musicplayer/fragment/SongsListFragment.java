@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -772,8 +771,6 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                         if (prePosition == -1){
                             holder.mVListsplayPlay.setVisibility(View.VISIBLE);
                             mConditionMap.put(position, CONDITION_SONGSLIST_1);
-                            holder.rootView.setBackgroundColor(getResources().getColor(R.color
-                                    .bgColor_gray));
 
                             //播放或暂停音乐
                             initPlayMusic(position);
@@ -788,18 +785,15 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                                 int p = (int) mShouldRevomeView.get("position");
                                 SongsListViewHolder _holder = (SongsListViewHolder) v.getTag();
                                 _holder.mVListsplayPlay.setVisibility(View.INVISIBLE);
-                                _holder.rootView.setBackgroundColor(Color.WHITE);
                                 mConditionMap.put(p, CONDITION_SONGSLIST_0);
 
                             } else{
                                 SongsListViewHolder mholder = (SongsListViewHolder) mView.getTag();
                                 mholder.mVListsplayPlay.setVisibility(View.INVISIBLE);
-                                mholder.rootView.setBackgroundColor(Color.WHITE);
                                 mConditionMap.put(prePosition, CONDITION_SONGSLIST_0);
                             }
 
                             holder.mVListsplayPlay.setVisibility(View.VISIBLE);
-                            holder.rootView.setBackgroundColor(getResources().getColor(R.color                                     .bgColor_gray));
                             mConditionMap.put(position, CONDITION_SONGSLIST_1);
 
                             //播放或暂停音乐
@@ -813,11 +807,9 @@ public class SongsListFragment extends BaseFragment implements View.OnClickListe
                             case CONDITION_SONGSLIST_0:
                                 break;
                             case CONDITION_SONGSLIST_1:
-                                holder.rootView.setBackgroundColor(getResources().getColor(R.color                                     .bgColor_gray));
                                 mConditionMap.put(position, CONDITION_SONGSLIST_2);
                                 break;
                             case CONDITION_SONGSLIST_2:
-                                holder.rootView.setBackgroundColor(getResources().getColor(R.color                                     .bgColor_gray));
                                 mConditionMap.put(position, CONDITION_SONGSLIST_1);
                                 break;
                             case CONDITION_SONGSLIST_3:

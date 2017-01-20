@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/color_musicbar"
+        android:background="?attr/mainTopColor"
         android:orientation="horizontal" >
 
         <ImageView

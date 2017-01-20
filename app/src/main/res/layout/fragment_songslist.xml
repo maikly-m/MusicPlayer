@@ -7,13 +7,13 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_white">
+        android:background="?attr/bgColor">
         <LinearLayout
             android:id="@+id/ll_songslist_"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@color/colorPrimary"
+            android:background="?attr/colorPrimary"
             >
             <LinearLayout
                 android:id="@+id/ll_songslist_back"
@@ -45,7 +45,7 @@
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:textColor="@color/textColor_white"/>
+                android:textColor="?attr/textColor"/>
             <ImageView
                 android:id="@+id/iv_songslist_add"
                 android:layout_gravity="center_vertical"
@@ -64,7 +64,7 @@
                 android:id="@+id/rl_songslist_normal"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:background="@color/white_"
+                android:background="?attr/musicTopColor"
                 android:visibility="visible">
                 <LinearLayout
                     android:id="@+id/ll_songslist_playmodel"
@@ -86,6 +86,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="播放顺序"
+                        android:textColor="?attr/textMusicColor"
                         />
                 </LinearLayout >
 
@@ -104,7 +105,7 @@
                 android:id="@+id/rl_songslist_select"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:background="@color/white_"
+                android:background="?attr/musicTopColor"
                 android:visibility="visible">
                 <ImageView
                     android:layout_centerVertical="true"
@@ -119,6 +120,7 @@
                     android:id="@+id/tv_songslist_select"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/textMusicColor"
                     android:text="已选择0首"/>
                 <Button
                     android:layout_alignParentRight="true"
@@ -147,6 +149,7 @@
                 android:id="@+id/tv_songlist_null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="?attr/textMusicColor"
                 android:text="还没有歌曲"/>
         </RelativeLayout >
         <LinearLayout
@@ -154,7 +157,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@color/textColor_gray">
+            android:background="?attr/textColor_">
             <LinearLayout
                 android:id="@+id/ll_songslist_delete"
                 android:gravity="center"

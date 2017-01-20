@@ -3,7 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              >
+              android:background="?attr/bgColor">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -14,7 +14,7 @@
             android:id="@+id/v_listsplay_play"
             android:layout_width="4dp"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
+            android:background="?attr/playColor"
             android:visibility="invisible" />
 
         <ImageView
@@ -35,7 +35,8 @@
             android:layout_width="20dp"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="1"/>
+            android:text="1"
+            android:textColor="?attr/textMusicColor"/>
         <ImageView
             android:id="@+id/iv_listsplay_icon"
             android:layout_width="35dp"
@@ -65,7 +66,8 @@
                 android:text="歌曲"
                 android:textSize="14sp"
                 android:maxLines="1"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:textColor="?attr/textMusicColor"/>
 
             <TextView
                 android:id="@+id/tv_listsplay_singer"
@@ -78,7 +80,8 @@
                 android:text="歌手"
                 android:textSize="14sp"
                 android:maxLines="1"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:textColor="?attr/textMusicColor"/>
         </LinearLayout >
 
         <com.example.mrh.musicplayer.custom.MyImageView
@@ -95,7 +98,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/textColor_gray"
+        android:background="?attr/textColor_"
         >
         <LinearLayout
             android:gravity="center"

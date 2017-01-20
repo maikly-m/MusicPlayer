@@ -881,7 +881,7 @@ public class PlaySevice extends Service {
             EventBus.getDefault().post(Constant.OK_DATA);
         }
         //保证kill掉后不重启
-        onStart(intent, startId);
+        super.onStartCommand(intent, flags, startId);
         return Service.START_NOT_STICKY;
 //        return super.onStartCommand(intent, flags, startId);
     }

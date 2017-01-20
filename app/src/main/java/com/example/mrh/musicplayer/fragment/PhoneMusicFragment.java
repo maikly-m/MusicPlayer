@@ -21,7 +21,6 @@ import com.example.mrh.musicplayer.activity.MainActivity;
 import com.example.mrh.musicplayer.domain.MusicInfo;
 import com.example.mrh.musicplayer.fragment.adapter.PhoneMusicAdapter;
 import com.example.mrh.musicplayer.fragment.viewHolder.PhoneMusicViewHolder;
-import com.example.mrh.musicplayer.utils.DebugUtils;
 import com.example.mrh.musicplayer.utils.Utils;
 
 import java.util.ArrayList;
@@ -177,21 +176,26 @@ public class PhoneMusicFragment extends BaseFragment implements View.OnClickList
         }
         //判断原先是否有歌曲
         ArrayList<MusicInfo> musicInfos = activity.songs_custom.get(activity.customMusicListName);
-        DebugUtils.log_d(TAG, "dddd++ "+ activity.customMusicListName);
         ArrayList<MusicInfo> mm = new ArrayList<>();
         for (int i = 0; i < l.size(); i++){
             mm.add(l.get(i));
         }
-        if (musicInfos.size() != 0){
-            for (MusicInfo m : musicInfos){
-                for (MusicInfo m1 : l){
-                    if (m1.getTITLE().equals(m.getTITLE())){
-                        mm.remove(m1);
+        if (musicInfos != null){
+            if (musicInfos.size() != 0){
+                for (MusicInfo m : musicInfos){
+                    for (MusicInfo m1 : l){
+                        if (m1.getTITLE().equals(m.getTITLE())){
+                            mm.remove(m1);
+                        }
                     }
                 }
+            }else {
+                musicInfos.addAll(mm);
             }
+        } else{
+            musicInfos = new ArrayList<>();
+            musicInfos.addAll(mm);
         }
-        musicInfos.addAll(mm);
         activity.songs_custom.put(activity.customMusicListName, musicInfos);
 
         MusicListFragment fragment = (MusicListFragment) fm.findFragmentByTag("MusicListFragment");

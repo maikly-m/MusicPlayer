@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+    <!--day-->
+    <color name="day_textColor" >#fff</color >
+    <color name="day_textMusicColor" >#444</color >
+    <color name="day_textColor_" >#999</color >
+    <color name="day_editColor" >#444</color >
+    <color name="day_dividerColor" >#888</color >
+    <color name="day_bgColor" >#fff</color >
+    <color name="day_mainBottomColor" >#bbbbbb</color >
+    <color name="day_mainTopColor" >#bbbbbb</color >
+    <color name="day_musicTopColor" >#cccccc</color >
+    <color name="day_popListColor" >#cccccc</color >
+    <color name="day_visualizerColor" >#ff23a9df</color >
+    <color name="day_lrcCurrentColor" >#fff</color >
+    <color name="day_lrcColor" >#ccc</color >
+    <color name="day_playColor" >#2268ff</color >
+
+    <drawable name="day_mainMenuBg">@drawable/skin_menu_bg</drawable>
+    <drawable name="day_playActivityBg">@drawable/skin_player_bg</drawable>
+
+    <!--night-->
+    <color name="night_colorPrimary" >#444444</color >
+    <color name="night_colorPrimaryDark" >#333</color >
+
+    <color name="night_textColor" >#fff</color >
+    <color name="night_textMusicColor" >#ccc</color >
+    <color name="night_textColor_" >#999</color >
+    <color name="night_editColor" >#ccc</color >
+    <color name="night_dividerColor" >#aaa</color >
+    <color name="night_bgColor" >#555555</color >
+    <color name="night_mainBottomColor" >#444</color >
+    <color name="night_mainTopColor" >#333</color >
+    <color name="night_musicTopColor" >#444</color >
+    <color name="night_popListColor" >#444</color >
+    <color name="night_visualizerColor" >#aaa</color >
+    <color name="night_lrcCurrentColor" >#fff</color >
+    <color name="night_lrcColor" >#ccc</color >
+    <color name="night_playColor" >#aaa</color >
+
+    <drawable name="night_mainMenuBg">@drawable/skin_menu_blank_bg</drawable>
+    <drawable name="night_playActivityBg">@drawable/skin_player_blank_bg</drawable>
+
+</resources >

@@ -6,6 +6,7 @@ import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Binder;
@@ -15,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,10 +168,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private boolean isUserClick = false;
     private RelativeLayout mRlMainactivity;
+    private String themeName;
+    private ImageView mIvMainmenuPre;
+    private TextView mTvMainmenuTheme;
+    private ImageView mIvMainmenuNext;
+    private boolean isShow = false;
+    private Bundle mState;
 
     @Override
     protected void onCreate (@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mState = savedInstanceState;
+        initTheme();
         EventBus.getDefault().register(this);
         mSlidingMenu = new SlidingMenu(this);
         setContentView(mSlidingMenu);
@@ -177,9 +187,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         initMenuView();
         mSlidingMenu.addView(mMenuView);
         mSlidingMenu.addView(mMainView);
+
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.mainMenuBg, typedValue, true);
         mSlidingMenu.setBackground(Utils.optimizeDrawble(MainActivity.this,
-                R.drawable.mainactivity_bg));
+                typedValue.resourceId));
         initService();
+    }
+
+    /**
+     * 设置主题
+     */
+    private void initTheme () {
+        SharedPreferences sp = getSharedPreferences(Constant.CUSTOM_THEME, MODE_PRIVATE);
+        themeName = sp.getString(Constant.CUSTOM_THEME_NAME, "");
+        switch (themeName){
+        case Constant.CUSTOM_THEME_NIGHT:
+            setTheme(R.style.Night_AppTheme);
+            break;
+        default:
+            setTheme(R.style.Day_AppTheme);
+            break;
+        }
     }
 
     private void initData () {
@@ -201,6 +230,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         EventBus.getDefault().post(Constant.UPDATE_INIT);
 
         mPlayer.currentActivity = "MainActivity";
+
+//        int isShow = (int) mState.get("isShow");
+//        if (isShow == 1){
+//            mSlidingMenu.open();
+//        }
     }
 
     private void initBassBoost () {
@@ -212,7 +246,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         short[] bandLevelRange = mPlayer.mEqualizer.getBandLevelRange();
         mMinRange = bandLevelRange[0] / 100;
         mMaxRange = bandLevelRange[1] / 100;
-        short numberOfBands = mPlayer.mEqualizer.getNumberOfBands();
+        //short numberOfBands = mPlayer.mEqualizer.getNumberOfBands();
 
         mTvMainmenuMinrange01.setText(mMinRange + "dB");
         mTvMainmenuMinrange02.setText(mMinRange + "dB");
@@ -676,6 +710,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         lp_.height = 0;
         mLlMainmenuPresetReverb_.setLayoutParams(lp_);
 
+        mIvMainmenuPre = (ImageView) mMenuView.findViewById(R.id.iv_mainmenu_pre);
+        mTvMainmenuTheme = (TextView) mMenuView.findViewById(R.id.tv_mainmenu_theme);
+        mIvMainmenuNext = (ImageView) mMenuView.findViewById(R.id.iv_mainmenu_next);
+        if (!themeName.equals("")){
+            mTvMainmenuTheme.setText(themeName);
+        }
+        mIvMainmenuPre.setOnClickListener(this);
+        mIvMainmenuNext.setOnClickListener(this);
+
         mBtnExit = (Button) mMenuView.findViewById(R.id.btn_exit);
         mBtnExit.setOnClickListener(this);
     }
@@ -898,10 +941,45 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             });
             va2.start();
             break;
+        case R.id.iv_mainmenu_pre:
+            changeTheme();
+            break;
+        case R.id.iv_mainmenu_next:
+            changeTheme();
+            break;
         case R.id.btn_exit:
             EventBus.getDefault().post(Constant.UPDATE_EXIT);
             break;
         }
+    }
+
+    private void changeTheme () {
+        switch (themeName){
+        case Constant.CUSTOM_THEME_DAY:
+        case "":
+            themeName = Constant.CUSTOM_THEME_NIGHT;
+            break;
+        case Constant.CUSTOM_THEME_NIGHT:
+            themeName = Constant.CUSTOM_THEME_DAY;
+            break;
+        }
+        mTvMainmenuTheme.setText(themeName);
+
+        SharedPreferences sp = getSharedPreferences(Constant.CUSTOM_THEME,
+                MODE_PRIVATE);
+        sp.edit().putString(Constant.CUSTOM_THEME_NAME, themeName).apply();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("isShow", 1);
+        onSaveInstanceState(bundle);
+
+        //重启activity
+        Intent intent = getIntent();
+        overridePendingTransition(0, 0);//不设置进入退出动画
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(intent);
     }
 
     private void changeBackground (float alpha) {

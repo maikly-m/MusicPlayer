@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 
 import com.example.mrh.musicplayer.R;
@@ -42,15 +43,18 @@ public class MyVisualizerView extends View {
 
     public MyVisualizerView (Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(R.attr.visualizerColor, typedValue, true);
+
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(context.getResources().getColor(R.color.playActivity_color_bg));
+        mPaint.setColor(context.getResources().getColor(typedValue.resourceId));
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setStrokeWidth(1);
 
         mPaint_mirror = new Paint();
         mPaint_mirror.setAntiAlias(true);
-        mPaint_mirror.setColor(context.getResources().getColor(R.color.playActivity_color_bg));
+        mPaint_mirror.setColor(context.getResources().getColor(typedValue.resourceId));
         mPaint_mirror.setStyle(Paint.Style.FILL);
         mPaint_mirror.setStrokeWidth(1);
         mPaint_mirror.setAlpha(60);

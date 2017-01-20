@@ -99,7 +99,7 @@ public class MusicListFragment extends BaseFragment implements View.OnClickListe
         mLvMusiclist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                selectFragment(list.get(position+1).getListName());
+                selectFragment(list.get(position+2).getListName());
             }
         });
     }

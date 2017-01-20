@@ -3,12 +3,14 @@ package com.example.mrh.musicplayer.activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -99,15 +101,33 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
     private boolean isShouldRevomeView = false;
     public View mView;
     private int mHeight;
+    private String themeName;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTheme();
         setContentView(R.layout.activity_play_content);
         initView();
         initService();
         EventBus.getDefault().register(this);
         initWakeLock();
+    }
+
+    /**
+     * 设置主题
+     */
+    private void initTheme () {
+        SharedPreferences sp = getSharedPreferences(Constant.CUSTOM_THEME, MODE_PRIVATE);
+        themeName = sp.getString(Constant.CUSTOM_THEME_NAME, "");
+        switch (themeName){
+        case Constant.CUSTOM_THEME_NIGHT:
+            setTheme(R.style.Night_AppTheme);
+            break;
+        default:
+            setTheme(R.style.Day_AppTheme);
+            break;
+        }
     }
 
     /**
@@ -154,8 +174,10 @@ public class PlayActivity extends BaseActivity implements View.OnClickListener, 
         mIvPlaycontentPlaymodel = (ImageView) findViewById(R.id.iv_playcontent_playmodel);
         mIvPlaycontentList = (ImageView) findViewById(R.id.iv_playcontent_list);
 
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.playActivityBg, typedValue, true);
         mLlPlaycontent.setBackground(Utils.optimizeDrawble(PlayActivity.this,
-                R.drawable.skin_player_bg));
+                typedValue.resourceId));
         mLlPlaycontentBack.setOnClickListener(this);
         mIvPlaycontentPlay.setOnClickListener(this);
         mIvPlaycontentNext.setOnClickListener(this);

@@ -7,10 +7,6 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="我是侧滑菜单"/>
         <LinearLayout
             android:padding="10dp"
             android:layout_width="260dp"
@@ -26,7 +22,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="均衡器"
-                    android:textColor="@color/textColor_gray"/>
+                    android:textColor="?attr/textColor_"/>
                 <ImageView
                     android:id="@+id/iv_mainmenu_equlizer"
                     android:padding="2dp"
@@ -46,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="@color/textColor_gray"/>
+                    android:textColor="?attr/textColor_"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -57,7 +53,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                     <SeekBar
                         android:id="@+id/sb_mainmenu_01"
                         android:layout_weight="1"
@@ -70,7 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                 </LinearLayout >
                 <TextView
                     android:id="@+id/tv_mainmenu_02"
@@ -78,7 +74,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="@color/textColor_gray"/>
+                    android:textColor="?attr/textColor_"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -89,7 +85,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                     <SeekBar
                         android:id="@+id/sb_mainmenu_02"
                         android:layout_weight="1"
@@ -102,7 +98,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                 </LinearLayout >
                 <TextView
                     android:id="@+id/tv_mainmenu_03"
@@ -110,7 +106,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="@color/textColor_gray"/>
+                    android:textColor="?attr/textColor_"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -121,7 +117,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                     <SeekBar
                         android:id="@+id/sb_mainmenu_03"
                         android:layout_weight="1"
@@ -134,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                 </LinearLayout >
                 <TextView
                     android:id="@+id/tv_mainmenu_04"
@@ -142,7 +138,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="@color/textColor_gray"/>
+                    android:textColor="?attr/textColor_"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -153,7 +149,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                     <SeekBar
                         android:id="@+id/sb_mainmenu_04"
                         android:layout_weight="1"
@@ -166,7 +162,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                 </LinearLayout >
                 <TextView
                     android:id="@+id/tv_mainmenu_05"
@@ -174,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="@color/textColor_gray"/>
+                    android:textColor="?attr/textColor_"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -185,7 +181,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="-15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                     <SeekBar
                         android:id="@+id/sb_mainmenu_05"
                         android:layout_weight="1"
@@ -198,7 +194,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="15db"
-                        android:textColor="@color/textColor_gray"/>
+                        android:textColor="?attr/textColor_"/>
                 </LinearLayout >
             </LinearLayout >
 
@@ -217,7 +213,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="重低音"
-                android:textColor="@color/textColor_gray"/>
+                android:textColor="?attr/textColor_"/>
             <SeekBar
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
@@ -244,7 +240,7 @@
                 android:layout_width="45dp"
                 android:layout_height="wrap_content"
                 android:text="普通"
-                android:textColor="@color/textColor_gray"/>
+                android:textColor="?attr/textColor_"/>
             <ImageView
                 android:layout_gravity="center_vertical"
                 android:id="@+id/iv_mainmenu_presetreverb"
@@ -268,6 +264,39 @@
 
     </LinearLayout >
 
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+        <ImageView
+            android:layout_margin="2dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/iv_mainmenu_pre"
+            android:padding="5dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/back_32px_left"/>
+        <TextView
+            android:gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/tv_mainmenu_theme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="白天"
+            android:textColor="?attr/textColor_"/>
+        <ImageView
+            android:layout_margin="2dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/iv_mainmenu_next"
+            android:padding="5dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/back_32px_right"/>
+    </LinearLayout >
     <Button
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="120dp"
